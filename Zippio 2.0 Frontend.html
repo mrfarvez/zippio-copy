@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Zippio 2.0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{box-sizing:border-box;--bg:#fafaf9;--card:#fff;--tx:#1c1917;--mut:#78716c;--ln:#e7e5e4;--ac:#4f46e5;--acs:#eef2ff;--ok:#16a34a;--oks:#dcfce7;--wn:#d97706;--wns:#fef3c7;--rd:#dc2626;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;--bg:#0c0a09;--card:#1c1917;--tx:#fafaf9;--mut:#a8a29e;--ln:#292524;--ac:#818cf8;--acs:#1e1b4b;--oks:#052e16;--wns:#422006}}
+*{box-sizing:border-box}html,body{margin:0}body{background:var(--bg);color:var(--tx);font:14px/1.5 Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+button,select,input,textarea{font:inherit;color:inherit}
+.app{display:flex;min-height:100vh}.side{width:220px;padding:20px 14px;border-right:1px solid var(--ln);background:var(--card);display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+.logo{font-weight:700;font-size:18px;padding:0 10px 16px;display:flex;gap:8px;align-items:center}.logo i{width:22px;height:22px;border-radius:7px;background:var(--ac);display:inline-block}
+.nav{padding:9px 12px;border-radius:9px;cursor:pointer;color:var(--mut);border:0;background:none;text-align:left}.nav:hover{background:var(--bg)}.nav.on{background:var(--acs);color:var(--ac);font-weight:600}
+.main{flex:1;padding:28px;max-width:1100px;min-width:0}h1{font-size:22px;margin:0 0 4px;letter-spacing:-.02em}.sub{color:var(--mut);margin:0 0 22px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin-bottom:18px}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:16px}.card h3{margin:0 0 10px;font-size:14px}
+.k{color:var(--mut);font-size:12px}.v{font-size:26px;font-weight:700;letter-spacing:-.02em}
+.btn{background:var(--ac);color:#fff;border:0;border-radius:9px;padding:7px 13px;cursor:pointer;font-weight:600}.btn.g{background:var(--acs);color:var(--ac)}.btn.r{background:var(--wns);color:var(--wn)}.btn:disabled{opacity:.4;cursor:default}
+.tag{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:600;background:var(--acs);color:var(--ac)}.tag.ok{background:var(--oks);color:var(--ok)}.tag.wn{background:var(--wns);color:var(--wn)}
+.board{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}.col{background:var(--bg);border:1px solid var(--ln);border-radius:14px;padding:12px;min-height:160px}
+.col>b{display:flex;justify-content:space-between;margin-bottom:10px}.task{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:12px;margin-bottom:10px}.task p{margin:4px 0 8px;font-weight:600}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.bar{height:8px;border-radius:9px;background:var(--ln);overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--ln)}th{color:var(--mut);font-weight:500;font-size:12px}.wrap{overflow-x:auto}
+input,select,textarea{background:var(--card);border:1px solid var(--ln);border-radius:9px;padding:8px 10px;width:100%}label{display:block;font-size:12px;color:var(--mut);margin-bottom:10px}
+.f{display:grid;gap:0 14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.login{max-width:380px;margin:12vh auto;padding:0 16px}.seg{display:flex;gap:6px;margin-bottom:14px}.seg button{flex:1}
+.toast{position:fixed;right:16px;bottom:16px;background:var(--tx);color:var(--bg);padding:10px 14px;border-radius:10px}
+@media(max-width:720px){.app{flex-direction:column}.side{width:auto;height:auto;position:static;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--ln)}.logo{padding:0 8px}.main{padding:16px}}
+</style></head><body><div id="root"></div>
+<script>
+const W=[["Productivity",.30],["Quality",.25],["Efficiency",.20],["Reliability",.15],["Consistency",.10]];
+const LV=[[0,"Starter"],[100,"Contributor"],[250,"Performer"],[500,"Advanced"],[800,"Expert"],[1200,"Elite"]];
+const U={e1:"Rahim Uddin",e2:"Nusrat Jahan",e3:"Imran Hossain"};
+const S={role:null,uid:null,page:"dash",toast:"",
+tasks:[
+{id:"ZP-101",t:"Design login page",u:"e1",pr:"High",h:6,pt:20,dl:"2026-11-08",st:"todo"},
+{id:"ZP-102",t:"Fix dashboard API bug",u:"e1",pr:"Critical",h:3,pt:15,dl:"2026-11-07",st:"progress"},
+{id:"ZP-103",t:"Write onboarding docs",u:"e1",pr:"Low",h:4,pt:10,dl:"2026-11-12",st:"review",note:"All sections done"},
+{id:"ZP-104",t:"Build report export",u:"e2",pr:"Medium",h:8,pt:25,dl:"2026-11-10",st:"todo"},
+{id:"ZP-105",t:"Test payment module",u:"e3",pr:"High",h:5,pt:20,dl:"2026-11-09",st:"review",note:"12 cases passed"}],
+pts:{e1:140,e2:520,e3:60},rt:{e1:[4,5],e2:[5,4,5],e3:[3]},
+d:{e1:[88,84,78,92,85],e2:[93,90,86,94,91],e3:[72,68,70,80,74]},att:{},ledger:[]};
+const $=s=>document.querySelector(s),now=()=>new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+const lvl=p=>{let i=0;LV.forEach((l,k)=>{if(p>=l[0])i=k});return i};
+const kpi=u=>{const d=S.d[u].slice(),r=S.rt[u];if(r.length)d[1]=Math.round(r.reduce((a,b)=>a+b,0)/r.length*20);return{d,k:W.reduce((a,w,i)=>a+d[i]*w[1],0)}};
+const tg=(s)=>({todo:"To Do",progress:"In Progress",review:"Done",approved:"Done"}[s]);
+const pc=p=>`<span class="tag ${p=="Critical"||p=="High"?"wn":""}">${p}</span>`;
+function toast(m){S.toast=m;draw();setTimeout(()=>{S.toast="";draw()},2200)}
+function login(role,uid){S.role=role;S.uid=uid;S.page="dash";if(role=="e"&&!S.att[uid])S.att[uid]={in:now(),out:null};if(role=="e")S.att[uid].out=null;draw()}
+function logout(){if(S.role=="e")S.att[S.uid].out=now();S.role=null;draw()}
+function go(p){S.page=p;draw()}
+function start(id){const t=S.tasks.find(x=>x.id==id);t.st="progress";draw()}
+function submit(id){const n=prompt("Completion notes?");if(n===null)return;const t=S.tasks.find(x=>x.id==id);t.st="review";t.note=n||"-";toast("Submitted for manager review")}
+function review(id,ok){const t=S.tasks.find(x=>x.id==id);if(!ok){t.st="progress";return toast("Rework requested")}
+ const r=+$("#rt"+id).value,bonus=r>=4?5:0,sum=t.pt+bonus;t.st="approved";S.rt[t.u].push(r);S.pts[t.u]+=sum;
+ const b=lvl(S.pts[t.u]-sum),a=lvl(S.pts[t.u]);S.ledger.unshift({u:t.u,t:t.t,v:sum,why:"Approved: base "+t.pt+(bonus?" + quality bonus 5":"")});
+ toast(a>b?U[t.u]+" leveled up to "+LV[a][1]+"!":"Approved, +"+sum+" points")}
+function addTask(e){const g=i=>$("#"+i).value;if(!g("nt")||!g("ndl"))return toast("Title and deadline required");
+ S.tasks.push({id:"ZP-"+(100+S.tasks.length+1),t:g("nt"),u:g("nu"),pr:g("np"),h:+g("nh"),pt:+g("nb"),dl:g("ndl"),st:"todo"});toast("Task assigned to "+U[g("nu")])}
+function bars(d){return W.map((w,i)=>`<div style="margin-bottom:10px"><div class="row"><span>${w[0]} <span class="k">${w[1]*100}%</span></span><b>${d[i]}</b></div><div class="bar"><i style="width:${d[i]}%"></i></div></div>`).join("")}
+function lvCard(u){const p=S.pts[u],i=lvl(p),n=LV[i+1],pr=n?(p-LV[i][0])/(n[0]-LV[i][0])*100:100;
+ return `<div class="card"><div class="k">Level L${i+1}</div><div class="v">${LV[i][1]}</div><p class="k">${p} growth points${n?" · "+(n[0]-p)+" to "+n[1]:""}</p><div class="bar"><i style="width:${pr}%"></i></div></div>`}
+function taskCard(t,emp){return `<div class="task"><div class="row"><span class="k">${t.id}</span>${pc(t.pr)}</div><p>${t.t}</p><div class="k">Due ${t.dl} · ${t.h}h · ${t.pt} pts</div><div class="row" style="margin-top:10px">${
+ t.st=="todo"?`<button class="btn" onclick="start('${t.id}')">Start task</button>`:t.st=="progress"?`<button class="btn" onclick="submit('${t.id}')">Mark as Done</button><button class="btn r" onclick="alert('Blocker reported to manager. Blocked time wont be penalized.')">Blocked</button>`:`<span class="tag ${t.st=="approved"?"ok":"wn"}">${t.st=="approved"?"Approved":"Pending review"}</span>`}</div></div>`}
+function board(list){return `<div class="board">${[["todo","To Do"],["progress","In Progress"],["done","Done"]].map(c=>{const l=list.filter(t=>c[0]=="done"?["review","approved"].includes(t.st):t.st==c[0]);return `<div class="col"><b>${c[1]}<span class="tag">${l.length}</span></b>${l.map(t=>taskCard(t)).join("")||'<p class="k">Nothing here</p>'}</div>`}).join("")}</div>`}
+function empView(){const u=S.uid,my=S.tasks.filter(t=>t.u==u),a=S.att[u],K=kpi(u),p=S.page;
+ if(p=="tasks")return `<h1>My Tasks</h1><p class="sub">Start a task to move it to In Progress, submit it as Done.</p>`+board(my);
+ if(p=="perf")return `<h1>My Performance</h1><p class="sub">W2G KPI and growth point history.</p><div class="grid"><div class="card"><div class="k">KPI score</div><div class="v">${K.k.toFixed(1)}</div></div>${lvCard(u)}</div><div class="card"><h3>Five dimensions</h3>${bars(K.d)}</div><div class="card" style="margin-top:14px"><h3>Point history</h3>${S.ledger.filter(l=>l.u==u).map(l=>`<div class="row" style="padding:6px 0"><span>${l.t}<span class="k"> · ${l.why}</span></span><b style="color:var(--ok)">+${l.v}</b></div>`).join("")||'<p class="k">No transactions yet. Complete a task to earn points.</p>'}</div>`;
+ if(p=="att")return `<h1>Attendance</h1><p class="sub">Login time is recorded as check-in automatically.</p><div class="grid"><div class="card"><div class="k">Check-in</div><div class="v">${a.in}</div></div><div class="card"><div class="k">Check-out</div><div class="v">${a.out||"Active"}</div></div></div>`;
+ const todo=my.filter(t=>t.st=="todo");
+ return `<h1>Welcome, ${U[u].split(" ")[0]}</h1><p class="sub">Checked in at ${a.in}. Here is your day.</p><div class="grid"><div class="card"><div class="k">To Do</div><div class="v">${todo.length}</div></div><div class="card"><div class="k">In Progress</div><div class="v">${my.filter(t=>t.st=="progress").length}</div></div><div class="card"><div class="k">KPI score</div><div class="v">${K.k.toFixed(1)}</div></div>${lvCard(u)}</div><div class="card"><h3>Your To Do list</h3>${todo.map(t=>taskCard(t)).join("")||'<p class="k">All caught up!</p>'}</div>`}
+function mgrView(){const p=S.page,T=S.tasks;
+ if(p=="new")return `<h1>Create Task</h1><p class="sub">Assigned tasks appear in the employee To Do list.</p><div class="card"><div class="f"><label>Title<input id="nt"></label><label>Assign to<select id="nu">${Object.entries(U).map(e=>`<option value="${e[0]}">${e[1]}</option>`).join("")}</select></label><label>Priority<select id="np"><option>Low<option selected>Medium<option>High<option>Critical</select></label><label>Estimated hours<input id="nh" type="number" value="4"></label><label>Base points<input id="nb" type="number" value="20"></label><label>Deadline<input id="ndl" type="date"></label></div><button class="btn" onclick="addTask()">Assign task</button></div>`;
+ if(p=="rev"){const q=T.filter(t=>t.st=="review");return `<h1>Review Queue</h1><p class="sub">Points become final only after you approve.</p>`+(q.map(t=>`<div class="card" style="margin-bottom:12px"><div class="row"><b>${t.t}</b><span class="k">${U[t.u]} · ${t.id}</span></div><p class="k">Notes: ${t.note}</p><div class="row"><label style="margin:0">Quality (1-5) <select id="rt${t.id}" style="width:70px"><option>5<option selected>4<option>3<option>2<option>1</select></label><span><button class="btn" onclick="review('${t.id}',1)">Approve +${t.pt}</button> <button class="btn r" onclick="review('${t.id}',0)">Request rework</button></span></div></div>`).join("")||'<div class="card k">No pending reviews.</div>')}
+ if(p=="team")return `<h1>Team Performance</h1><p class="sub">Attendance, KPI, points and levels.</p><div class="card wrap"><table><tr><th>Employee<th>Check-in<th>KPI<th>Points<th>Level<th>Next step</tr>${Object.keys(U).map(u=>{const k=kpi(u).k;return `<tr><td>${U[u]}<td>${S.att[u]?S.att[u].in+(S.att[u].out?" – "+S.att[u].out:" (active)"):'<span class="k">Absent</span>'}<td><b>${k.toFixed(1)}</b><td>${S.pts[u]}<td><span class="tag">${LV[lvl(S.pts[u])][1]}</span><td>${k>=88&&lvl(S.pts[u])>=3?'<span class="tag ok">Promotion ready</span>':k>=85?'<span class="tag ok">Bonus eligible</span>':'<span class="k">Keep growing</span>'}</tr>`}).join("")}</table></div>`;
+ if(p=="all")return `<h1>All Tasks</h1><p class="sub">Monitor status across the team.</p><div class="card wrap"><table><tr><th>ID<th>Task<th>Employee<th>Priority<th>Due<th>Status</tr>${T.map(t=>`<tr><td>${t.id}<td>${t.t}<td>${U[t.u]}<td>${pc(t.pr)}<td>${t.dl}<td><span class="tag">${{todo:"To Do",progress:"In Progress",review:"Pending review",approved:"Approved"}[t.st]}</span></tr>`).join("")}</table></div>`;
+ const c=s=>T.filter(t=>t.st==s).length;
+ return `<h1>Manager Dashboard</h1><p class="sub">Team overview.</p><div class="grid"><div class="card"><div class="k">Present</div><div class="v">${Object.keys(S.att).length}/${Object.keys(U).length}</div></div><div class="card"><div class="k">To Do</div><div class="v">${c("todo")}</div></div><div class="card"><div class="k">In Progress</div><div class="v">${c("progress")}</div></div><div class="card"><div class="k">Pending reviews</div><div class="v">${c("review")}</div></div></div><div class="card"><h3>Employee KPI</h3>${Object.keys(U).map(u=>`<div style="margin-bottom:10px"><div class="row"><span>${U[u]}</span><b>${kpi(u).k.toFixed(1)}</b></div><div class="bar"><i style="width:${kpi(u).k}%"></i></div></div>`).join("")}</div>`}
+function draw(){let h;
+ if(!S.role){h=`<div class="login"><div class="logo"><i></i>Zippio 2.0</div><p class="sub">Every task creates performance. Every performance builds growth.</p><div class="card"><div class="k" style="margin-bottom:8px">Sign in as</div><div class="seg"><button class="btn g" onclick="login('m')">Manager</button></div><label>Employee<select id="lu">${Object.entries(U).map(e=>`<option value="${e[0]}">${e[1]}</option>`).join("")}</select></label><button class="btn" style="width:100%" onclick="login('e',$('#lu').value)">Login as Employee</button><p class="k">Login time becomes check-in time automatically.</p></div></div>`}
+ else{const E=S.role=="e",N=E?[["dash","Dashboard"],["tasks","My Tasks"],["perf","Performance"],["att","Attendance"]]:[["dash","Dashboard"],["new","Create Task"],["all","All Tasks"],["rev","Reviews"],["team","Team"]];
+ h=`<div class="app"><aside class="side"><div class="logo"><i></i>Zippio</div>${N.map(n=>`<button class="nav ${S.page==n[0]?"on":""}" onclick="go('${n[0]}')">${n[1]}</button>`).join("")}<button class="nav" style="margin-top:auto" onclick="logout()">Logout</button></aside><main class="main">${E?empView():mgrView()}</main></div>`}
+ $("#root").innerHTML=h+(S.toast?`<div class="toast">${S.toast}</div>`:"")}
+draw();
+</script></body></html>
