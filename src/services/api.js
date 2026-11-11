@@ -1,4 +1,4 @@
-const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:4000/api").replace(/\/$/, "");
+const API_URL = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "/api" : "http://localhost:4000/api")).replace(/\/$/, "");
 let accessToken = sessionStorage.getItem("zippio_access_token");
 
 async function rawRequest(path, options = {}) {

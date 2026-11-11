@@ -66,15 +66,16 @@ const commentSchema = z.object({ body: z.string().trim().min(1).max(10_000) });
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 }, fileFilter: (_request, file, callback) => callback(null, /^(application\/pdf|image\/(png|jpeg)|application\/zip|text\/plain|application\/msword|application\/vnd.openxmlformats-officedocument.wordprocessingml.document|application\/vnd.ms-excel|application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet)$/.test(file.mimetype)) });
 
 app.use(helmet());
-const configuredOrigin = new URL(config.CORS_ORIGIN);
+const configuredOrigins = config.CORS_ORIGIN.split(",").map((item) => item.trim()).filter(Boolean);
+const configuredOrigin = configuredOrigins.length ? new URL(configuredOrigins[0]) : null;
 const isAllowedOrigin = (origin) => {
   if (!origin) return true;
-  if (origin === config.CORS_ORIGIN) return true;
+  if (configuredOrigins.includes(origin)) return true;
   if (config.NODE_ENV !== "production") {
     try {
       const requestOrigin = new URL(origin);
       return ["localhost", "127.0.0.1"].includes(requestOrigin.hostname)
-        && requestOrigin.protocol === configuredOrigin.protocol
+        && configuredOrigin && requestOrigin.protocol === configuredOrigin.protocol
         && requestOrigin.port >= "5173" && requestOrigin.port <= "5199";
     } catch {
       return false;
