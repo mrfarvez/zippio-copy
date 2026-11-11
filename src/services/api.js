@@ -1,28 +1,116 @@
-const employees = [
-  { id: "e1", name: "Rahim Uddin", initials: "RU", title: "Product designer", email: "rahim@zippio.com", department: "Design", points: 140, scores: [88, 84, 78, 92, 85], checkIn: "2026-11-05T08:42:00", activity: [{ id: 1, title: "Dashboard API bug approved", reason: "Quality bonus", date: "Today, 10:14 AM", value: 20 }, { id: 2, title: "Design login page", reason: "Task completion", date: "Yesterday", value: 20 }, { id: 3, title: "Early delivery bonus", reason: "Performance bonus", date: "Nov 01, 2026", value: 5 }], attendance: [{ date: "Nov 05, 2026", in: "08:42 AM", out: "Active", duration: "04h 32m", status: "Present" }, { date: "Nov 04, 2026", in: "08:56 AM", out: "05:11 PM", duration: "08h 15m", status: "Present" }, { date: "Nov 03, 2026", in: "09:18 AM", out: "05:04 PM", duration: "07h 46m", status: "Late" }] },
-  { id: "e2", name: "Nusrat Jahan", initials: "NJ", title: "Senior engineer", email: "nusrat@zippio.com", department: "Engineering", points: 520, scores: [93, 90, 86, 94, 91], checkIn: "2026-11-05T08:31:00", activity: [], attendance: [] },
-  { id: "e3", name: "Imran Hossain", initials: "IH", title: "QA engineer", email: "imran@zippio.com", department: "Engineering", points: 60, scores: [72, 68, 70, 80, 74], checkIn: "2026-11-05T09:05:00", activity: [], attendance: [] },
-];
-const tasks = [
-  { id: "ZP-101", title: "Design login page", employeeId: "e1", priority: "High", hours: 6, points: 20, deadline: "Nov 08, 2026", status: "todo" },
-  { id: "ZP-102", title: "Fix dashboard API bug", employeeId: "e1", priority: "Critical", hours: 3, points: 15, deadline: "Nov 07, 2026", status: "progress" },
-  { id: "ZP-103", title: "Write onboarding docs", employeeId: "e1", priority: "Low", hours: 4, points: 10, deadline: "Nov 12, 2026", status: "review", note: "All sections are complete and ready for review." },
-  { id: "ZP-104", title: "Build report export", employeeId: "e2", priority: "Medium", hours: 8, points: 25, deadline: "Nov 10, 2026", status: "todo" },
-  { id: "ZP-105", title: "Test payment module", employeeId: "e3", priority: "High", hours: 5, points: 20, deadline: "Nov 09, 2026", status: "review", note: "12 test cases passed successfully." },
-];
-const hrRequests = [
-  { id: "HR-101", department: "Development", requirement: "2 Developers", type: "Manpower request", status: "In progress", progress: 68, priority: "High", deadline: "Nov 18, 2026", requester: "Sadia Ahmed", officer: "Nadia Karim", created: "Nov 02, 2026", delay: "Awaiting final budget confirmation", comments: 4 },
-  { id: "HR-102", department: "Marketing", requirement: "1 Marketing Executive", type: "Recruitment request", status: "Pending approval", progress: 18, priority: "Medium", deadline: "Nov 22, 2026", requester: "Tanvir Hasan", officer: "Unassigned", created: "Nov 04, 2026", delay: "Manager approval required", comments: 2 },
-  { id: "HR-103", department: "Accounts", requirement: "1 Accountant", type: "Manpower request", status: "Completed", progress: 100, priority: "Low", deadline: "Nov 08, 2026", requester: "Moin Uddin", officer: "Nadia Karim", created: "Oct 18, 2026", delay: "No delay", comments: 8 },
-  { id: "HR-104", department: "Engineering", requirement: "MacBook Pro 14-inch", type: "Equipment request", status: "In progress", progress: 44, priority: "Medium", deadline: "Nov 15, 2026", requester: "Rahim Uddin", officer: "Ayesha Rahman", created: "Nov 01, 2026", delay: "Procurement team reviewing availability", comments: 3 },
-  { id: "HR-105", department: "Design", requirement: "UX research training", type: "Training request", status: "Pending approval", progress: 10, priority: "Low", deadline: "Nov 28, 2026", requester: "Nusrat Jahan", officer: "Unassigned", created: "Nov 05, 2026", delay: "Department head review required", comments: 1 },
-];
+const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:4000/api").replace(/\/$/, "");
+let accessToken = sessionStorage.getItem("zippio_access_token");
 
-const delay = (data) => Promise.resolve(JSON.parse(JSON.stringify(data)));
+async function rawRequest(path, options = {}) {
+  const headers = options.body instanceof FormData ? { ...options.headers } : { "Content-Type": "application/json", ...options.headers };
+  if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
+  const response = await fetch(`${API_URL}${path}`, { cache: "no-store", ...options, headers });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok) {
+    const issues = Array.isArray(payload?.issues) && payload.issues.length
+      ? ` (${payload.issues.map((issue) => `${issue.path.join(".") || "request"}: ${issue.message}`).join("; ")})`
+      : "";
+    throw new Error(`${payload?.message || `Request failed with status ${response.status}`}${issues}`);
+  }
+  return payload;
+}
+
+async function request(path, options) {
+  try {
+    return await rawRequest(path, options);
+  } catch (error) {
+    if (!String(error.message).includes("expired") && !String(error.message).includes("Authentication required")) throw error;
+    const refreshToken = sessionStorage.getItem("zippio_refresh_token");
+    if (!refreshToken) throw error;
+    const result = await rawRequest("/auth/refresh", { method: "POST", body: JSON.stringify({ refreshToken }) });
+    accessToken = result.token;
+    sessionStorage.setItem("zippio_access_token", accessToken);
+    sessionStorage.setItem("zippio_refresh_token", result.refreshToken);
+    return rawRequest(path, options);
+  }
+}
 
 export const api = {
-  employees: { list: () => delay(employees), get: (id) => delay(employees.find((employee) => employee.id === id)) },
-  tasks: { list: () => delay(tasks), create: (payload) => delay(payload), update: (id, payload) => delay({ id, ...payload }) },
-  hrRequests: { list: () => delay(hrRequests), get: (id) => delay(hrRequests.find((request) => request.id === id)) },
-  auth: { login: (credentials) => delay({ token: "demo-token", user: credentials }) },
+  employees: { list: () => request("/employees"), get: (id) => request(`/employees/${id}`), create: (payload) => request("/employees", { method: "POST", body: JSON.stringify(payload) }) },
+  tasks: {
+    list: () => request("/tasks"),
+    create: (payload) => request("/tasks", { method: "POST", body: JSON.stringify(payload) }),
+    update: (id, payload) => request(`/tasks/${id}`, { method: "PATCH", body: JSON.stringify(payload) }),
+  },
+  hrRequests: {
+    list: () => request("/hr-requests"),
+    get: (id) => request(`/hr-requests/${id}`),
+    create: (payload) => request("/hr-requests", { method: "POST", body: JSON.stringify(payload) }),
+    update: (id, payload) => request(`/hr-requests/${id}`, { method: "PATCH", body: JSON.stringify(payload) }),
+    comments: (id) => request(`/hr-requests/${id}/comments`),
+    addComment: (id, body) => request(`/hr-requests/${id}/comments`, { method: "POST", body: JSON.stringify({ body }) }),
+  },
+  support: {
+    list: () => request("/support/tickets"),
+    create: (payload) => request("/support/tickets", { method: "POST", body: JSON.stringify(payload) }),
+    update: (id, payload) => request(`/support/tickets/${id}`, { method: "PATCH", body: JSON.stringify(payload) }),
+  },
+  reviews: {
+    list: (taskId) => request(`/tasks/${taskId}/reviews`),
+    submit: (taskId, payload) => request(`/tasks/${taskId}/reviews`, { method: "POST", body: JSON.stringify(payload) }),
+  },
+  delegations: {
+    list: () => request("/delegations"),
+    create: (payload) => request("/delegations", { method: "POST", body: JSON.stringify(payload) }),
+    review: (id, payload) => request(`/delegations/${id}`, { method: "PATCH", body: JSON.stringify(payload) }),
+  },
+  attendance: {
+    list: () => request("/attendance"),
+    checkIn: () => request("/attendance/check-in", { method: "POST" }),
+    checkOut: () => request("/attendance/check-out", { method: "POST" }),
+  },
+  leave: {
+    list: () => request("/leave-requests"),
+    create: (payload) => request("/leave-requests", { method: "POST", body: JSON.stringify(payload) }),
+    types: () => request("/leave-types"),
+    balances: (employeeId) => request(`/leave-balances/${employeeId}`),
+    review: (id, payload) => request(`/leave-requests/${id}`, { method: "PATCH", body: JSON.stringify(payload) }),
+  },
+  performance: {
+    get: (employeeId) => request(`/performance/${employeeId}`),
+    cycles: () => request("/performance/cycles"),
+    createCycle: (payload) => request("/performance/cycles", { method: "POST", body: JSON.stringify(payload) }),
+    saveScores: (cycleId, employeeId, payload) => request(`/performance/cycles/${cycleId}/employees/${employeeId}`, { method: "PUT", body: JSON.stringify(payload) }),
+  },
+  reports: { summary: () => request("/reports/summary") },
+  privacy: {
+    list: () => request("/privacy/requests"),
+    create: (payload) => request("/privacy/requests", { method: "POST", body: JSON.stringify(payload) }),
+    update: (id, payload) => request(`/privacy/requests/${id}`, { method: "PATCH", body: JSON.stringify(payload) }),
+  },
+  attachments: {
+    upload: (taskId, file) => {
+      const body = new FormData();
+      body.append("file", file);
+      return request(`/tasks/${taskId}/attachment`, { method: "POST", body });
+    },
+  },
+  auth: {
+    employees: () => rawRequest("/auth/employees"),
+    login: async ({ role, userId, email, password }) => {
+      const credentials = role === "employee" && !email ? { role, userId, password } : { email, password };
+      const result = await rawRequest("/auth/login", { method: "POST", body: JSON.stringify(credentials) });
+      accessToken = result.token;
+      sessionStorage.setItem("zippio_access_token", accessToken);
+      if (result.refreshToken) sessionStorage.setItem("zippio_refresh_token", result.refreshToken);
+      const resolvedRole = result.user?.role || role;
+      const resolvedUserId = userId || result.user?.userId || result.user?.id;
+      return { ...result, user: { ...result.user, role: resolvedRole, userId: resolvedUserId } };
+    },
+    logout: async () => {
+      try {
+        if (accessToken) await request("/auth/logout", { method: "POST", body: JSON.stringify({ refreshToken: sessionStorage.getItem("zippio_refresh_token") }) });
+      } finally {
+        accessToken = null;
+        sessionStorage.removeItem("zippio_access_token");
+        sessionStorage.removeItem("zippio_refresh_token");
+        sessionStorage.removeItem("zippio_session");
+      }
+    },
+  },
 };
