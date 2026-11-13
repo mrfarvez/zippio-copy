@@ -10,6 +10,9 @@ const schema = z.object({
   JWT_REFRESH_SECRET: z.string().min(32),
   JWT_ACCESS_TTL: z.string().default("15m"),
   JWT_REFRESH_TTL_DAYS: z.coerce.number().int().positive().default(30),
+  GITHUB_CLIENT_ID: z.string().min(1).optional(),
+  GITHUB_CLIENT_SECRET: z.string().min(1).optional(),
+  GITHUB_REDIRECT_URI: z.string().url().optional(),
 });
 
 const parsed = schema.safeParse(process.env);

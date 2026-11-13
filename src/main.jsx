@@ -15,6 +15,8 @@ function Icon({ name }) {
   const paths = {
     grid: "M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z",
     tasks: "M5 5h14M5 12h14M5 19h8",
+    code: "m8 7-5 5 5 5m8-10 5 5-5 5",
+    branch: "M6 3v12m0 0a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm12-9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0 3c0 4-4 4.5-8 5",
     chart: "M4 19V5m0 14h16M8 16v-3m4 3V8m4 8v-6",
     users: "M16 20v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M9.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm6-7a4 4 0 0 1 0 7.7M21 20v-1a4 4 0 0 0-3-3.9",
     clock: "M12 7v5l3 2m6-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
@@ -25,6 +27,13 @@ function Icon({ name }) {
     check: "m5 12 4 4L19 6",
     menu: "M4 6h16M4 12h16M4 18h16",
     calendar: "M5 4v3m14-3v3M4 9h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z",
+    file: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8ZM14 2v6h6M9 13h6M9 17h6",
+    link: "M9.5 13.5a4 4 0 0 0 6 .4l2.8-2.8a4 4 0 0 0-5.7-5.7l-1.4 1.4M14.5 10.5a4 4 0 0 0-6-.4l-2.8 2.8a4 4 0 0 0 5.7 5.7l1.4-1.4",
+    lock: "M6 11h12v10H6zM8.5 11V7.5a3.5 3.5 0 0 1 7 0V11M12 15v3",
+    shield: "M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6Z",
+    folder: "M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z",
+    clip: "M20 11.5 12.4 19a5 5 0 0 1-7-7l7.6-7.6a3.4 3.4 0 0 1 4.8 4.8L10.6 16a1.8 1.8 0 0 1-2.5-2.5l6.7-6.7",
+    download: "M12 3v12m-5-5 5 5 5-5M5 21h14",
   };
   return <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={paths[name]} /></svg>;
 }
@@ -64,8 +73,8 @@ function Badge({ children, tone = "neutral" }) {
   return <span className={`badge badge-${tone}`}>{children}</span>;
 }
 
-function Button({ children, variant = "primary", icon, ...props }) {
-  return <button className={`button button-${variant}`} {...props}>{icon && <Icon name={icon} />}{children}</button>;
+function Button({ children, variant = "primary", icon, className, ...props }) {
+  return <button className={`button button-${variant}${className ? ` ${className}` : ""}`} {...props}>{icon && <Icon name={icon} />}{children}</button>;
 }
 
 function StatCard({ label, value, note, icon, tone = "blue" }) {
@@ -98,9 +107,20 @@ function Login({ onLogin, error }) {
   return <main className="auth-page"><section className="auth-visual"><div className="brand brand-light"><span className="brand-mark">Z</span>Zippio</div><div className="visual-copy"><Badge tone="light">CORPORATE HR & WORKFORCE PLATFORM</Badge><h1>Make people, work, and <em>growth</em> visible.</h1><p>One calm workspace to align work, manage requests, and help every team member grow.</p></div><div className="visual-footer"><span>Trusted by high-performing teams</span><span>● 99.9% uptime</span><span>● Secure by design</span></div></section><section className="auth-form"><form className="auth-form-inner" onSubmit={submit}><div className="brand"><span className="brand-mark">Z</span>Zippio <span className="version">2.0</span></div><div className="auth-heading"><h2>Welcome back</h2><p>Sign in to continue to your workspace.</p></div><div className="role-switch role-switch-three"><button type="button" className={role === "manager" ? "active" : ""} onClick={() => setRole("manager")}>Manager</button><button type="button" className={role === "employee" ? "active" : ""} onClick={() => setRole("employee")}>Employee</button><button type="button" className={role === "hr" ? "active" : ""} onClick={() => setRole("hr")}>HR</button></div>{role === "employee" ? <label className="field">Choose employee<select value={employee} onChange={(e) => setEmployee(e.target.value)}>{employeeOptions.map((option) => <option key={option.id} value={option.id}>{option.name} ({option.id})</option>)}</select></label> : <label className="field">Work email<input type="email" required autoComplete="username" placeholder={role === "hr" ? "hr@company.com" : "manager@company.com"} value={email} onChange={(e) => setEmail(e.target.value)} /></label>}<label className="field">Password<input type="password" required minLength="8" autoComplete="current-password" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)} /></label><div className="form-row"><label className="check"><input type="checkbox" defaultChecked /> Remember me</label><a href="#forgot">Forgot password?</a></div>{error && <p className="auth-error" role="alert">{error}</p>}<Button type="submit"><span>Sign in</span><Icon name="arrow" /></Button></form></section></main>;
 }
 
-function Sidebar({ role, employee, page, setPage, onLogout, open, setOpen, name = "", jobTitle = "", reviewCount = 0, requestCount = 0 }) {
-  const employeeItems = [["dashboard", "Overview", "grid"], ["tasks", "My tasks", "tasks"], ["performance", "Performance", "chart"], ["attendance", "Attendance", "clock"], ["leave", "Apply leave", "calendar"]];
-  const managerItems = [["dashboard", "Overview", "grid"], ["tasks", "All tasks", "tasks"], ["employees", "Employees", "users"], ["reviews", "Review queue", "check"], ["reports", "Performance", "chart"]];
+function Sidebar({ role, employee, page, setPage, onLogout, open, setOpen, name = "", jobTitle = "", reviewCount = 0, requestCount = 0, onMenuAction }) {
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const [githubStatus, setGithubStatus] = useState(null);
+  useEffect(() => {
+    api.github.status().then(setGithubStatus).catch(() => setGithubStatus({ connected: false }));
+  }, []);
+  useEffect(() => {
+    if (!accountMenuOpen) return;
+    const close = () => setAccountMenuOpen(false);
+    window.addEventListener("click", close);
+    return () => window.removeEventListener("click", close);
+  }, [accountMenuOpen]);
+  const employeeItems = [["dashboard", "Overview", "grid"], ["tasks", "My tasks", "tasks"], ["development", "Development", "code"], ...( ["team lead", "teamlead"].includes(String(employee?.title || "").trim().toLowerCase()) ? [["projects", "Your projects", "grid"]] : []), ["performance", "Performance", "chart"], ["attendance", "Attendance", "clock"], ["leave", "Apply leave", "calendar"]];
+  const managerItems = [["dashboard", "Overview", "grid"], ["tasks", "All tasks", "tasks"], ["projects", "Projects", "grid"], ["development", "Development", "code"], ["employees", "Employees", "users"], ["reviews", "Review queue", "check"], ["reports", "Performance", "chart"]];
   const hrItems = [["dashboard", "Command center", "grid"], ["requests", "HR requests", "tasks"], ["employees", "Employees", "users"], ["analytics", "Performance & analytics", "chart"], ["support", "Helpdesk & support", "bell"]];
   const items = role === "employee" ? employeeItems : role === "hr" ? hrItems : managerItems;
   const isHr = role === "hr";
@@ -109,7 +129,11 @@ function Sidebar({ role, employee, page, setPage, onLogout, open, setOpen, name 
     : isHr
       ? { initials: (name || "HR").split(" ").map((part) => part[0]).join("").slice(0, 2) || "HR", name: name || "HR manager", title: "HR manager" }
       : { initials: (name || "Manager").split(" ").map((part) => part[0]).join("").slice(0, 2) || "M", name: name || "Manager", title: jobTitle || "Manager" };
-  return <aside className={`sidebar ${open ? "sidebar-open" : ""}`}><div className="sidebar-top"><div className="brand"><span className="brand-mark">Z</span>Zippio <span className="version">2.0</span></div><button className="mobile-close" onClick={() => setOpen(false)}>×</button></div><div className="workspace"><span className="workspace-avatar">{role === "manager" ? "M" : isHr ? "HR" : profile.initials}</span><div><strong>{role === "manager" ? "Acme workspace" : isHr ? "Acme HR workspace" : profile.name}</strong><small>{role === "manager" ? (jobTitle ? `${jobTitle} workspace` : "Manager workspace") : isHr ? "Human resources" : profile.title}</small></div><span className="chevron">⌄</span></div>{isHr && <div className="sidebar-label">HR OPERATIONS</div>}<nav>{items.map(([id, label, icon]) => <button key={id} className={page === id ? "nav-item active" : "nav-item"} onClick={() => { setPage(id); setOpen(false); }}><Icon name={icon} /><span>{label}</span>{id === "reviews" && reviewCount > 0 && <Badge tone="red">{reviewCount}</Badge>}{id === "requests" && requestCount > 0 && <Badge tone="red">{requestCount}</Badge>}</button>)}</nav>{isHr && <><div className="sidebar-label sidebar-section-label">EMPLOYEE SUPPORT</div><button className={`nav-item ${page === "leave" ? "active" : ""}`} onClick={() => { setPage("leave"); setOpen(false); }}><Icon name="check" /><span>Attendance & leave</span></button></>}<div className="sidebar-bottom"><div className="help-card"><div className="help-icon">?</div><div><strong>Need a hand?</strong><small>Visit our help center</small></div></div><button className="nav-item" onClick={onLogout}><Icon name="logout" /><span>Sign out</span></button><div className="profile-row"><span className="avatar">{profile.initials}</span><div><strong>{profile.name}</strong><small>{profile.title}</small></div><span className="dots">•••</span></div></div></aside>;
+  return <aside className={`sidebar ${open ? "sidebar-open" : ""}`}><div className="sidebar-top"><div className="brand"><span className="brand-mark">Z</span>Zippio <span className="version">2.0</span></div><button className="mobile-close" onClick={() => setOpen(false)}>×</button></div><div className="workspace"><span className="workspace-avatar">{role === "manager" ? "M" : isHr ? "HR" : profile.initials}</span><div><strong>{role === "manager" ? "Acme workspace" : isHr ? "Acme HR workspace" : profile.name}</strong><small>{role === "manager" ? (jobTitle ? `${jobTitle} workspace` : "Manager workspace") : isHr ? "Human resources" : profile.title}</small></div><span className="chevron">⌄</span></div>{isHr && <div className="sidebar-label">HR OPERATIONS</div>}<nav>{items.map(([id, label, icon]) => <button key={id} className={page === id ? "nav-item active" : "nav-item"} onClick={() => { setPage(id); setOpen(false); }}><Icon name={icon} /><span>{label}</span>{id === "reviews" && reviewCount > 0 && <Badge tone="red">{reviewCount}</Badge>}{id === "requests" && requestCount > 0 && <Badge tone="red">{requestCount}</Badge>}</button>)}</nav>{isHr && <><div className="sidebar-label sidebar-section-label">EMPLOYEE SUPPORT</div><button className={`nav-item ${page === "leave" ? "active" : ""}`} onClick={() => { setPage("leave"); setOpen(false); }}><Icon name="check" /><span>Attendance & leave</span></button></>}<div className="sidebar-bottom"><div className="help-card"><div className="help-icon">?</div><div><strong>Need a hand?</strong><small>Visit our help center</small></div></div><button className="nav-item" onClick={onLogout}><Icon name="logout" /><span>Sign out</span></button><div className="profile-row"><span className="avatar">{profile.initials}</span><div><strong>{profile.name}</strong><small>{profile.title}</small></div><button type="button" className={`dots ${accountMenuOpen ? "dots-open" : ""}`} title="Account options" onClick={(event) => { event.stopPropagation(); if (!accountMenuOpen) api.github.status().then(setGithubStatus).catch(() => {}); setAccountMenuOpen((current) => !current); }}>•••</button>{accountMenuOpen && <div className="account-menu" onClick={(event) => event.stopPropagation()}>
+  <button type="button" onClick={() => { setAccountMenuOpen(false); onMenuAction?.("profile"); }}><Icon name="users" /><span>Profile</span></button>
+  <button type="button" onClick={() => { setAccountMenuOpen(false); onMenuAction?.("settings"); }}><Icon name="grid" /><span>Settings</span></button>
+  <button type="button" onClick={() => { setAccountMenuOpen(false); onMenuAction?.("github"); }}><Icon name="branch" /><span>GitHub</span>{githubStatus?.connected && <span className="account-chip green">● Connected</span>}{githubStatus && !githubStatus.connected && <span className="account-chip muted">Not connected</span>}</button>
+</div>}</div></div></aside>;
 }
 
 function Header({ title, subtitle, onMenu, onCreate, createLabel = "Create task", notifications = 0 }) {
@@ -118,7 +142,7 @@ function Header({ title, subtitle, onMenu, onCreate, createLabel = "Create task"
 
 function TaskCard({ task, employeeName, onStart, onSubmit, onOpen }) {
   const status = task.status === "progress" && task.delegationStatus ? taskDelegationChip(task.delegationStatus) : task.status === "todo" ? ["To do", "blue"] : task.status === "progress" ? ["In progress", "orange"] : task.status === "review" ? ["Pending review", "purple"] : task.status === "handoff" ? ["Owner review", "purple"] : ["Approved", "green"];
-  return <article className="task-card task-card-clickable" onClick={() => onOpen?.(task)}><div className="task-top"><span className="task-id">{task.id}</span><Badge tone={task.priority === "Critical" || task.priority === "High" ? "red" : "neutral"}>{task.priority}</Badge></div><h3>{task.title}</h3>{employeeName && <p className="task-owner">{employeeName}</p>}<div className="task-meta"><span><Icon name="clock" />{task.hours}h estimate</span><span className={`task-points ${task.kpi?.overdue ? "negative" : ""}`}>{task.kpi?.score >= 0 ? "+" : ""}{task.kpi?.score ?? task.points} KPI</span></div>{task.attachmentName && <div className="task-attachment">📎 {task.attachmentName}</div>}{task.githubRepo && <div className="task-attachment">⌘ {task.githubRepo}</div>}<div className="task-footer"><span className={`task-due ${task.kpi?.overdue ? "negative" : ""}`}>Due {new Date(task.deadline).toLocaleString()}</span><Badge tone={status[1]}>{status[0]}</Badge></div></article>;
+  return <article className="task-card task-card-clickable" onClick={() => onOpen?.(task)}><div className="task-top"><span className="task-id">{task.id}</span><Badge tone={task.priority === "Critical" || task.priority === "High" ? "red" : "neutral"}>{task.priority}</Badge></div><h3>{task.title}</h3>{employeeName && <p className="task-owner">{employeeName}</p>}<div className="task-meta"><span><Icon name="clock" />{task.hours}h estimate</span><span className={`task-points ${task.kpi?.overdue ? "negative" : ""}`}>{task.kpi?.score >= 0 ? "+" : ""}{task.kpi?.score ?? task.points} KPI</span></div>{task.attachmentName && <div className="task-attachment"><Icon name="clip" /> {task.attachmentName}</div>}{task.projectName && <div className="task-attachment"><Icon name="folder" /> {task.projectName}</div>}{task.githubRepo && <div className="task-attachment">⌘ {task.githubRepo}</div>}<div className="task-footer"><span className={`task-due ${task.kpi?.overdue ? "negative" : ""}`}>Due {new Date(task.deadline).toLocaleString()}</span><Badge tone={status[1]}>{status[0]}</Badge></div></article>;
 }
 
 function delegationStatusTone(status) {
@@ -155,14 +179,96 @@ function AttachmentPicker({ file, onChange }) {
   return <label className={`upload-box ${file ? "upload-box-selected" : ""}`}><span className="upload-icon">{file ? "✓" : "↑"}</span><strong>{file ? file.name : "Choose a file to attach"}</strong><small>{file ? `${size} · Ready to upload` : "Drag & drop or browse · PDF, DOC, XLS, PNG, JPG or ZIP · Max 10 MB"}</small><input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.zip" onChange={(event) => onChange(event.target.files?.[0] || null)} /></label>;
 }
 
-function TaskDetails({ task, employeeName, currentEmployeeId, onClose, onUpload, onStart, onDelegate, onReview, canReview }) {
+function TaskDetails({ task, employeeName, currentEmployeeId, role = "employee", onClose, onUpload, onTaskRefresh, onStart, onDelegate, onReview, canReview }) {
   const [file, setFile] = useState(null);
-  const [githubRepo, setGithubRepo] = useState(task.githubRepo || "");
+  const [attachments, setAttachments] = useState(null);
+  const [downloadError, setDownloadError] = useState("");
+  const [subType, setSubType] = useState("");
+  const [subLinkUrl, setSubLinkUrl] = useState("");
+  const [subCommitUrl, setSubCommitUrl] = useState("");
+  const [subBusy, setSubBusy] = useState(false);
+  const [subError, setSubError] = useState("");
+  const [uploadedNames, setUploadedNames] = useState([]);
+  const [commitReload, setCommitReload] = useState(0);
+  const [account, setAccount] = useState(null);
+  useEffect(() => {
+    setAttachments(null);
+    api.attachments.list(task.id).then(setAttachments).catch(() => setAttachments([]));
+    if (role === "employee") api.github.status().then(setAccount).catch(() => setAccount({ connected: false }));
+  }, [task.id]);
+  const downloadAttachment = async (item) => {
+    setDownloadError("");
+    try {
+      const blob = await api.attachments.download(task.id, item.id);
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = item.fileName || "attachment";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    } catch (requestError) {
+      setDownloadError(requestError.message);
+    }
+  };
+  const addSubmissionFile = async () => {
+    if (!file) return;
+    setSubBusy(true);
+    setSubError("");
+    try {
+      await api.attachments.upload(task.id, file);
+      setUploadedNames((current) => [...current, file.name]);
+      setFile(null);
+      setAttachments(await api.attachments.list(task.id));
+      setSubType("");
+    } catch (requestError) {
+      setSubError(requestError.message);
+    } finally { setSubBusy(false); }
+  };
+  const addSubmissionLink = async () => {
+    const url = subLinkUrl.trim();
+    if (!url) return;
+    setSubBusy(true);
+    setSubError("");
+    try {
+      const updated = await api.tasks.addLink(task.id, { kind: /^https?:\/\/(www\.)?github\.com\/[^/]+\/[^/]+\/?$/.test(url) ? "repo" : "link", url });
+      onTaskRefresh?.(updated);
+      setSubLinkUrl("");
+      setSubType("");
+    } catch (requestError) {
+      setSubError(requestError.message);
+    } finally { setSubBusy(false); }
+  };
+  const addSubmissionCommit = async () => {
+    const url = subCommitUrl.trim();
+    if (!url) return;
+    setSubBusy(true);
+    setSubError("");
+    try {
+      await api.commits.verify(task.id, url);
+      setSubCommitUrl("");
+      setCommitReload((current) => current + 1);
+      setSubType("");
+    } catch (requestError) {
+      setSubError(requestError.message);
+    } finally { setSubBusy(false); }
+  };
+  const connectGitHub = async () => {
+    setSubError("");
+    try {
+      const { url } = await api.github.start();
+      window.location.assign(url);
+    } catch (requestError) { setSubError(requestError.message); }
+  };
+  const seenRefs = new Set();
+  const references = [...(task.githubRepo ? [{ kind: "repo", url: task.githubRepo }] : []), ...(task.referenceLinks || [])].filter((item) => { const key = String(item.url).toLowerCase(); if (seenRefs.has(key)) return false; seenRefs.add(key); return true; });
+  const hasProjectContext = Boolean(task.projectId || task.projectRepo || task.githubRepo);
   const status = task.status === "progress" && task.delegationStatus ? taskDelegationChip(task.delegationStatus) : task.status === "todo" ? ["To do", "blue"] : task.status === "progress" ? ["In progress", "orange"] : task.status === "review" ? ["Pending review", "purple"] : task.status === "handoff" ? ["Owner review", "purple"] : ["Approved", "green"];
-  const submitForReview = () => { onUpload(task.id, file, githubRepo); onClose(); };
+  const submitForReview = () => { onUpload(task.id, uploadedNames[uploadedNames.length - 1] || "", ""); onClose(); };
   const delegatedLock = task.status === "progress" && (task.delegationStatus === "pending" || task.delegationStatus === "approved");
   const canDelegate = !task.parentTaskId && !delegatedLock && (task.status === "todo" || task.status === "progress");
-  return <div className="modal-backdrop" onMouseDown={onClose}><section className="task-details-modal" onMouseDown={(event) => event.stopPropagation()}><div className="modal-header"><div><div className="task-detail-id">{task.id}</div><h2>{task.title}</h2><p>{employeeName ? `Assigned to ${employeeName}` : "Your assigned task"}</p></div><button className="close-button" onClick={onClose}>×</button></div><div className="task-detail-badges"><Badge tone={status[1]}>{status[0]}</Badge><Badge tone={task.priority === "Critical" || task.priority === "High" ? "red" : "neutral"}>{task.priority} priority</Badge>{task.kpi?.overdue && <Badge tone="red">{task.kpi.lateDays} days overdue</Badge>}{task.parentTaskId && <Badge tone="purple">Subtask</Badge>}</div><div className="task-detail-grid"><div><span className="eyebrow">Deadline</span><strong>{new Date(task.deadline).toLocaleString()}</strong></div><div><span className="eyebrow">Estimated time</span><strong>{task.hours} hours</strong></div><div><span className="eyebrow">Current KPI</span><strong className={task.kpi?.score < 0 ? "negative" : "positive"}>{task.kpi?.score >= 0 ? "+" : ""}{task.kpi?.score ?? task.points} pts</strong><small>{task.kpi?.scoringStatus}</small></div></div><div className="task-detail-section"><h3>Task description</h3><p>{task.description || task.note || "Complete the assigned work according to the agreed requirements and submit it for review before the deadline."}</p></div><div className="task-detail-section"><h3>Submission attachments <span className="optional-label">Optional</span></h3>{task.attachmentName && <div className="existing-attachment">📎 <span>{task.attachmentName}</span><small>Attached to task</small></div>}<AttachmentPicker file={file} onChange={setFile} /><label className="field repo-field">GitHub repository <span className="optional-label">Optional</span><input type="url" value={githubRepo} onChange={(event) => setGithubRepo(event.target.value)} placeholder="https://github.com/owner/repository" /></label></div><div className="task-detail-section"><h3>Work logs</h3><div className="work-started"><span className="work-started-dot" />Task created at {new Date(task.taskCreatedAt).toLocaleString("en-BD", { timeZone: "Asia/Dhaka" })}</div>{task.startedAt ? <div className="work-started"><span className="work-started-dot" />Work started at {formatTime(task.startedAt)}</div> : <div className="detail-empty">Work has not been started yet.</div>}</div>{canReview && task.status === "review" ? <div className="task-detail-actions"><Button variant="secondary" onClick={() => { onReview(task.id, false); onClose(); }}>Request rework</Button><Button onClick={() => { onReview(task.id, true); onClose(); }}>Approve</Button></div> : delegatedLock ? <div className="detail-empty">This task is delegated to a teammate. Manage it from the delegation request.</div> : task.status !== "review" && task.status !== "handoff" && task.status !== "approved" && <div className="task-detail-actions">{canDelegate && <Button variant="secondary" icon="users" onClick={() => onDelegate(task)}>Delegate task</Button>}{task.status === "todo" && <Button variant="green" icon="clock" onClick={() => onStart(task.id)}>Start work</Button>}<Button onClick={submitForReview}>Submit for review</Button></div>}</section></div>;
+  return <div className="modal-backdrop" onMouseDown={onClose}><section className="task-details-modal" onMouseDown={(event) => event.stopPropagation()}><div className="modal-header"><div><div className="task-detail-id">{task.id}</div><h2>{task.title}</h2><p>{employeeName ? `Assigned to ${employeeName}` : "Your assigned task"}</p></div><button className="close-button" onClick={onClose}>×</button></div><div className="task-detail-badges"><Badge tone={status[1]}>{status[0]}</Badge><Badge tone={task.priority === "Critical" || task.priority === "High" ? "red" : "neutral"}>{task.priority} priority</Badge>{task.kpi?.overdue && <Badge tone="red">{task.kpi.lateDays} days overdue</Badge>}{task.parentTaskId && <Badge tone="purple">Subtask</Badge>}{task.projectName && <Badge tone="blue"><Icon name="folder" /> {task.projectName}</Badge>}</div><div className="task-detail-grid"><div><span className="eyebrow">Deadline</span><strong>{new Date(task.deadline).toLocaleString()}</strong></div><div><span className="eyebrow">Estimated time</span><strong>{task.hours} hours</strong></div><div><span className="eyebrow">Current KPI</span><strong className={task.kpi?.score < 0 ? "negative" : "positive"}>{task.kpi?.score >= 0 ? "+" : ""}{task.kpi?.score ?? task.points} pts</strong><small>{task.kpi?.scoringStatus}</small></div></div><div className="task-detail-section"><h3>Task description</h3><p>{task.description || task.note || "Complete the assigned work according to the agreed requirements and submit it for review before the deadline."}</p></div><div className="task-detail-section"><h3>Reference documents</h3>{!references.length && !(attachments || []).length && <p className="detail-empty">No reference documents were added to this task.</p>}{references.map((item, index) => <a className="ref-item" key={`${item.kind}-${index}`} href={item.url} target="_blank" rel="noreferrer"><span className="ref-item-icon"><Icon name={item.kind === "repo" ? "branch" : "link"} /></span><div className="ref-item-info"><strong>{item.kind === "repo" ? "GitHub repository" : "Reference link"}</strong><small>{item.url.replace(/^https?:\/\//, "")}</small></div><span className="ref-item-action">Open ↗</span></a>)}{(attachments || []).map((item) => <div className="ref-item" key={item.id}><span className="ref-item-icon"><Icon name="file" /></span><div className="ref-item-info"><strong>{item.fileName}</strong><small>{(item.sizeBytes / 1024 / 1024).toFixed(2)} MB · uploaded {new Date(item.uploadedAt).toLocaleDateString()}</small></div><button type="button" className="small-button" onClick={() => downloadAttachment(item)}>Download</button></div>)}{downloadError && <p className="auth-error" role="alert">{downloadError}</p>}</div><div className="task-detail-section"><h3>Submission documents <span className="optional-label">Optional</span></h3>{task.attachmentName && !uploadedNames.length && <div className="existing-attachment"><Icon name="clip" /> <span>{task.attachmentName}</span><small>Attached to task</small></div>}{uploadedNames.length > 0 && <div className="existing-attachment"><Icon name="clip" /> <span>{uploadedNames.join(", ")}</span><small>Uploaded with this submission</small></div>}{role === "employee" && task.status !== "approved" && <div className="ref-builder submission-builder"><div className="ref-add-row"><select value={subType} onChange={(event) => { setSubType(event.target.value); setSubError(""); }} aria-label="Choose what to add"><option value="">Choose what to add…</option><option value="file">Document file (PDF, DOC, XLS, PNG, ZIP)</option><option value="link">Reference link</option>{hasProjectContext && <option value="commits">GitHub commits</option>}</select></div>{subType === "file" && <div className="submission-add-row"><AttachmentPicker file={file} onChange={setFile} /><Button type="button" variant="secondary" className="add-file-button" disabled={!file || subBusy} onClick={addSubmissionFile}>{subBusy ? "Uploading…" : "Add file"}</Button></div>}{subType === "link" && <div className="submission-add-row"><input type="url" value={subLinkUrl} onChange={(event) => setSubLinkUrl(event.target.value)} placeholder="https://example.com/resource or a GitHub repository" /><Button type="button" variant="secondary" disabled={!subLinkUrl.trim() || subBusy} onClick={addSubmissionLink}>Add link</Button></div>}{subType === "commits" && (account && !account.connected ? <div className="commit-connect"><p className="detail-empty">Connect GitHub so Zippio can verify your commits and unlock submission.</p><Button variant="secondary" onClick={connectGitHub}>Connect GitHub</Button></div> : <div className="submission-add-row"><input type="url" value={subCommitUrl} onChange={(event) => setSubCommitUrl(event.target.value)} placeholder="https://github.com/owner/repo/commit/abc1234..." /><Button type="button" variant="secondary" disabled={!subCommitUrl.trim() || subBusy} onClick={addSubmissionCommit}>{subBusy ? "Verifying…" : "Verify commit"}</Button></div>)}{subError && <p className="auth-error" role="alert">{subError}</p>}<small className="field-hint">Files and links you add here go to the manager with your submission{hasProjectContext ? " — GitHub commits are verified against the repository" : ""}.</small></div>}</div><GitHubCommitPanel task={task} role={role} reloadSignal={commitReload} /><div className="task-detail-section"><h3>Work logs</h3><div className="work-started"><span className="work-started-dot" />Task created at {new Date(task.taskCreatedAt).toLocaleString("en-BD", { timeZone: "Asia/Dhaka" })}</div>{task.startedAt ? <div className="work-started"><span className="work-started-dot" />Work started at {formatTime(task.startedAt)}</div> : <div className="detail-empty">Work has not been started yet.</div>}</div>{canReview && task.status === "review" ? <div className="task-detail-actions"><Button variant="secondary" onClick={() => { onReview(task.id, false); onClose(); }}>Request rework</Button><Button onClick={() => { onReview(task.id, true); onClose(); }}>Approve</Button></div> : delegatedLock ? <div className="detail-empty">This task is delegated to a teammate. Manage it from the delegation request.</div> : task.status !== "review" && task.status !== "handoff" && task.status !== "approved" && <div className="task-detail-actions">{canDelegate && <Button variant="secondary" icon="users" onClick={() => onDelegate(task)}>Delegate task</Button>}{task.status === "todo" && <Button variant="green" icon="clock" onClick={() => onStart(task.id)}>Start work</Button>}<Button onClick={submitForReview}>Submit for review</Button></div>}</section></div>;
 }
 
 function DelegationModal({ task, employees, currentEmployeeId, onClose, onSubmit }) {
@@ -173,12 +279,422 @@ function DelegationModal({ task, employees, currentEmployeeId, onClose, onSubmit
   return <div className="modal-backdrop" onMouseDown={onClose}><section className="modal delegation-modal" onMouseDown={(event) => event.stopPropagation()}><div className="modal-header"><div><Badge tone="purple">Task delegation</Badge><h2>Delegate part of this task</h2><p>Send a request to a teammate. A manager will set the KPI points during approval.</p></div><button className="close-button" onClick={onClose}>×</button></div><div className="delegation-parent"><strong>{task.id} · {task.title}</strong><span>Parent KPI: +{task.points} pts · Delegated KPI will be set by the manager</span></div><form onSubmit={submit}><div className="form-grid"><label className="field full">Assign to teammate<select value={form.employeeId} onChange={update("employeeId")}>{teammates.map((employee) => <option key={employee.id} value={employee.id}>{employee.name} · {employee.department}</option>)}</select></label><label className="field full">Subtask title<input required value={form.title} onChange={update("title")} /></label><label className="field full">Work to delegate<textarea required value={form.details} onChange={update("details")} placeholder="Explain the exact part, expected output, and handoff requirements" /></label></div><div className="modal-footer"><Button type="button" variant="secondary" onClick={onClose}>Cancel</Button><Button type="submit" icon="arrow">Send delegation request</Button></div></form></section></div>;
 }
 
+function pullRequestBadge(pr) {
+  if (pr.merged) return <Badge tone="purple">Merged</Badge>;
+  if (pr.approved) return <Badge tone="green">Approved</Badge>;
+  if (pr.state === "open") return <Badge tone="blue">Open</Badge>;
+  return <Badge tone="neutral">Closed</Badge>;
+}
+
+function DevelopmentPrList({ pullRequests, emptyMessage }) {
+  if (!pullRequests.length) return <p className="detail-empty">{emptyMessage}</p>;
+  return <div className="dev-pr-list">{pullRequests.map((pr) => (
+    <div className="commit-row dev-pr-row" key={pr.number}>
+      <span className="dev-pr-number">#{pr.number}</span>
+      <div className="commit-info"><strong>{pr.title}</strong><small>{pr.mergedAt ? `Merged ${new Date(pr.mergedAt).toLocaleString()}` : pr.closedAt && pr.state === "closed" ? `Closed ${new Date(pr.closedAt).toLocaleString()}` : `Opened ${new Date(pr.createdAt).toLocaleString()}`}</small></div>
+      {pullRequestBadge(pr)}
+      <a className="commit-link" href={pr.url} target="_blank" rel="noreferrer" title="Open pull request on GitHub">↗</a>
+    </div>
+  ))}</div>;
+}
+
+function DevelopmentCommitList({ commits, emptyMessage }) {
+  if (!commits.length) return <p className="detail-empty">{emptyMessage}</p>;
+  return <div className="commit-list">{commits.map((commit) => (
+    <div className="commit-row" key={commit.sha}>
+      <span className="commit-sha">{commit.shortSha}</span>
+      <div className="commit-info">
+        <strong>{(commit.message || "No commit message").split("\n")[0]}</strong>
+        <small>{commit.author ? `@${commit.author}` : "Unknown author"}{commit.committedAt ? ` · ${new Date(commit.committedAt).toLocaleString()}` : ""}{commit.taskCode ? ` · ${commit.taskCode}` : ""}</small>
+      </div>
+      {commit.verified ? <Badge tone="green">✓ Verified</Badge> : <Badge tone="neutral">GitHub</Badge>}
+      <a className="commit-link" href={commit.url} target="_blank" rel="noreferrer" title="Open commit on GitHub">↗</a>
+    </div>
+  ))}</div>;
+}
+
+function DevelopmentProjectModal({ projectId, onClose }) {
+  const [data, setData] = useState(null);
+  const [error, setError] = useState("");
+  const [tab, setTab] = useState("prs");
+  useEffect(() => {
+    api.development.project(projectId).then(setData).catch((loadError) => setError(loadError.message));
+  }, [projectId]);
+  const statusLabel = { todo: ["To do", "blue"], progress: ["In progress", "orange"], review: ["Pending review", "purple"], handoff: ["Owner review", "purple"], approved: ["Approved", "green"] };
+  return <div className="modal-backdrop" onMouseDown={onClose}><section className="task-details-modal dev-project-modal" onMouseDown={(event) => event.stopPropagation()}>
+    <div className="modal-header"><div>
+      {data ? <><div className="task-detail-id">{data.project.id}</div><h2>{data.project.name}</h2><p>{data.project.repo ? data.project.repo.replace(/^https?:\/\//, "") : "No repository linked"} · Your contribution</p></> : <h2>Project development</h2>}
+    </div><button className="close-button" onClick={onClose}>×</button></div>
+    {error && <p className="auth-error" role="alert">{error}</p>}
+    {data && <>{data.connected && !data.githubReachable && <p className="auth-error" role="alert">GitHub data could not be loaded for this repository right now — showing your verified commits only.</p>}
+    <div className="task-detail-badges">
+      <Badge tone="blue"><Icon name="folder" /> {data.project.name}</Badge>
+      {data.project.memberRole === "lead" && <Badge tone="purple">Project lead</Badge>}
+      <Badge tone={data.connected ? "green" : "neutral"}>{data.connected ? `@${data.login}` : "GitHub not connected"}</Badge>
+    </div>
+    <div className="stats-grid stats-grid-four">
+      <StatCard label="Pull requests" value={data.pullRequests} note={`${data.openPullRequests} open`} icon="branch" />
+      <StatCard label="PR approved" value={data.approvedPullRequests} note={`${data.mergedPullRequests} merged`} icon="check" tone="green" />
+      <StatCard label="Commits" value={data.commits} note="GitHub history" icon="code" tone="orange" />
+      <StatCard label="Verified commits" value={data.verifiedCommits} note="+3 KPI bonus each" icon="check" tone="purple" />
+    </div>
+    <div className="dev-tabs">
+      <button className={tab === "prs" ? "active" : ""} onClick={() => setTab("prs")}>Pull requests ({data.pullRequests.length})</button>
+      <button className={tab === "commits" ? "active" : ""} onClick={() => setTab("commits")}>Commit history ({data.commits.length})</button>
+      <button className={tab === "tasks" ? "active" : ""} onClick={() => setTab("tasks")}>Tasks ({data.tasks.length})</button>
+    </div>
+    {tab === "prs" && <DevelopmentPrList pullRequests={data.pullRequests} emptyMessage={data.connected ? "No pull requests from your account in this repository yet." : "Connect GitHub to see the pull requests you opened in this project."} />}
+    {tab === "commits" && <DevelopmentCommitList commits={data.commits} emptyMessage="No commits found yet. Push your work to the repository or verify commit links from your tasks." />}
+    {tab === "tasks" && (data.tasks.length ? <div className="commit-list">{data.tasks.map((task) => (
+      <div className="commit-row" key={task.id}>
+        <span className="commit-sha">{task.id}</span>
+        <div className="commit-info"><strong>{task.title}</strong><small>{task.commitCount ? `${task.commitCount} verified commit${task.commitCount > 1 ? "s" : ""} · ` : ""}+{task.points} pts</small></div>
+        <Badge tone={(statusLabel[task.status] || statusLabel.todo)[1]}>{(statusLabel[task.status] || statusLabel.todo)[0]}</Badge>
+      </div>
+    ))}</div> : <p className="detail-empty">No tasks assigned to you in this project yet.</p>)}
+    </>}
+    {!data && !error && <p className="detail-empty">Loading project activity…</p>}
+  </section></div>;
+}
+
+function DevelopmentPage({ employee, setPage, projects = [], isManager = false, canCreate = false, onCreate, employees = [], onMemberChange, onDeleteProject }) {
+  const [data, setData] = useState(null);
+  const [error, setError] = useState("");
+  const [selectedProject, setSelectedProject] = useState(null);
+  useEffect(() => {
+    if (isManager) {
+      setData({ connected: true, githubReachable: true, login: null, totals: { pullRequests: 0, approvedPullRequests: 0, mergedPullRequests: 0, commits: 0, verifiedCommits: 0 }, recentActivity: [], projects: projects.map((project) => ({
+        id: project.id, name: project.name, description: project.description, repo: project.repo_url || null, status: project.status, memberRole: "lead", taskCount: Number(project.taskCount || 0), pullRequests: 0, approvedPullRequests: 0, mergedPullRequests: 0, commits: 0, verifiedCommits: 0,
+      })) });
+      return;
+    }
+    api.development.summary().then(setData).catch((loadError) => setError(loadError.message));
+  }, [isManager, projects]);
+  const connect = async () => {
+    try {
+      const { url } = await api.github.start();
+      window.location.assign(url);
+    } catch (connectError) { setError(connectError.message); }
+  };
+  const totals = data?.totals || { pullRequests: 0, approvedPullRequests: 0, commits: 0, verifiedCommits: 0 };
+  return <>
+    <Header title="Development" subtitle={`${isManager ? "Create and manage your team projects" : `Your engineering footprint across projects, ${employee.name.split(" ")[0]}.`}.`} onMenu={() => {}} onCreate={canCreate ? onCreate : null} createLabel="New project" notifications={0} />
+    {error && <p className="auth-error" role="alert">{error}</p>}
+    {data && !data.connected && <section className="panel dev-connect-panel"><div><Badge tone="purple">GitHub</Badge><h3>Connect your GitHub account</h3><p>Connect GitHub to unlock your pull requests, commit history, and approvals across every project you work on.</p></div><Button onClick={connect}>Connect GitHub</Button></section>}
+    {data && data.connected && !data.githubReachable && <p className="auth-error" role="alert">Some GitHub repositories could not be reached right now — the numbers below may only include your verified commits.</p>}
+    <div className="stats-grid stats-grid-four">
+      <StatCard label="Total pull requests" value={totals.pullRequests} note={data?.connected ? `as @${data.login}` : "Connect GitHub to see"} icon="branch" />
+      <StatCard label="PR approved" value={totals.approvedPullRequests} note={`${totals.mergedPullRequests || 0} merged in total`} icon="check" tone="green" />
+      <StatCard label="Commit history" value={totals.commits} note="Across all your projects" icon="code" tone="orange" />
+      <StatCard label="Verified commits" value={totals.verifiedCommits} note="+3 KPI bonus each on approval" icon="check" tone="purple" />
+    </div>
+    <div className="content-grid">
+      <section className="panel">
+        <div className="panel-header"><div><h2>Your projects</h2><p>Open a project to see pull requests, commits, and your contribution.</p></div></div>
+        {data && data.projects.length > 0 && <div className="task-list">{data.projects.map((project) => (
+            <article className="task-card task-card-clickable" key={project.id} onClick={() => setSelectedProject(project.id)}>
+            <div className="task-top"><span className="task-id">{project.id}</span>{project.memberRole === "lead" ? <Badge tone="purple">Lead</Badge> : <Badge tone="neutral">{project.status}</Badge>}</div>
+            <h3>{project.name}</h3>
+            {project.repo && <div className="task-attachment">⌘ {project.repo.replace(/^https?:\/\//, "")}</div>}
+            <div className="dev-project-stats">
+              <span title="Your pull requests"><Icon name="branch" />{project.pullRequests} PR</span>
+              <span title="Approved pull requests">✓ {project.approvedPullRequests} approved</span>
+              <span title="Your commits"><Icon name="code" />{project.commits} commits</span>
+              <span title="Verified commits">{project.verifiedCommits} verified</span>
+            </div>
+            <div className="task-footer"><span>{project.taskCount} task{project.taskCount === 1 ? "" : "s"}</span><span className="link-button">View development <Icon name="arrow" /></span></div>
+          </article>
+        ))}</div>}
+        {data && !data.projects.length && <p className="detail-empty">You are not added to any project yet. Ask your manager to add you to a project team.</p>}
+        {!data && !error && <p className="detail-empty">Loading your development data…</p>}
+      </section>
+      <section className="panel">
+        <div className="panel-header"><div><h2>Recent GitHub activity</h2><p>Your latest commits and pull requests everywhere.</p></div></div>
+        {data && data.recentActivity.length > 0 && <div className="commit-list">{data.recentActivity.map((item, index) => (
+          <div className="commit-row" key={`${item.type}-${index}`}>
+            <span className="commit-sha">{item.type === "commit" ? item.sha : "PR"}</span>
+            <div className="commit-info"><strong>{item.title}</strong><small>{item.repo} · {item.at ? new Date(item.at).toLocaleString() : "—"}</small></div>
+            {item.type === "pull_request" ? pullRequestBadge({ merged: item.merged, approved: item.approved, state: item.state }) : <Badge tone="neutral">Commit</Badge>}
+            <a className="commit-link" href={item.url} target="_blank" rel="noreferrer" title="Open on GitHub">↗</a>
+          </div>
+        ))}</div>}
+        {data && !data.recentActivity.length && <p className="detail-empty">No GitHub activity yet. Push commits or open pull requests on your project repositories, or verify commit links from your tasks.</p>}
+        {!data && !error && <p className="detail-empty">Loading activity…</p>}
+      </section>
+    </div>
+    <section className="panel dev-overview-panel">
+      <div className="panel-header"><div><h2>Total GitHub activities</h2><p>Everything from the repositories of the projects you are part of.</p></div></div>
+      {data && <div className="dev-overview-stats">
+        <div><strong>{totals.pullRequests}</strong><span>Total pull requests</span></div>
+        <div><strong>{totals.approvedPullRequests}</strong><span>PR approvals</span></div>
+        <div><strong>{totals.mergedPullRequests || 0}</strong><span>Merged PRs</span></div>
+        <div><strong>{totals.commits}</strong><span>GitHub commits</span></div>
+        <div><strong>{totals.verifiedCommits}</strong><span>Verified commits</span></div>
+        <div><strong>{data.projects.length}</strong><span>Projects</span></div>
+      </div>}
+      {!data && !error && <p className="detail-empty">Loading totals…</p>}
+    </section>
+    {selectedProject && (isManager || canCreate ? <ManagerProjectModal projectId={selectedProject} employees={employees} onClose={() => setSelectedProject(null)} onMemberChange={onMemberChange} onDeleteProject={onDeleteProject} /> : <DevelopmentProjectModal projectId={selectedProject} onClose={() => setSelectedProject(null)} />)}
+  </>;
+}
+
+function ManagerProjectModal({ projectId, employees = [], onClose, onMemberChange, onDeleteProject }) {
+  const [data, setData] = useState(null);
+  const [error, setError] = useState("");
+  const [tab, setTab] = useState("team");
+  const [query, setQuery] = useState("");
+  const [busy, setBusy] = useState("");
+  const [notice, setNotice] = useState("");
+  const [confirming, setConfirming] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [memberOptions, setMemberOptions] = useState(employees);
+  const refresh = (whichTab) => api.projects.overview(projectId).then((result) => { setData(result); if (whichTab) setTab(whichTab); }).catch((loadError) => setError(loadError.message));
+  useEffect(() => {
+    setData(null); setError(""); setTab("team"); setNotice(""); setConfirming(false);
+    refresh();
+    api.employees.list().then(setMemberOptions).catch(() => {});
+  }, [projectId]);
+  const addMember = async (employeeId) => {
+    if (!employeeId || busy) return;
+    setBusy(employeeId); setError(""); setNotice("");
+    try {
+      const result = await onMemberChange(projectId, employeeId, "add");
+      const invite = result?.invite;
+      setNotice(invite?.status === "invited" ? `${invite.name} added — GitHub repository invite sent.`
+        : invite?.status === "already-collaborator" ? `${invite.name} added — already has repository access.`
+        : invite?.status === "github-not-connected" ? `${invite.name} added — they must connect GitHub before a repository invite can be sent.`
+        : invite?.status === "creator-not-connected" ? `${invite.name} added — connect your GitHub account to send repository invites.`
+        : invite?.status ? `${invite.name} added — repository invite could not be sent (${invite.status}).`
+        : "Member added.");
+      await refresh();
+    } catch (requestError) { setError(requestError.message); }
+    finally { setBusy(""); }
+  };
+  const removeMember = async (member) => {
+    if (busy) return;
+    setBusy(member.employeeId); setError(""); setNotice("");
+    try { await onMemberChange(projectId, member.employeeId, "remove"); setNotice(`${member.name} removed from the project.`); await refresh(); }
+    catch (requestError) { setError(requestError.message); }
+    finally { setBusy(""); }
+  };
+  const deleteProject = async () => {
+    setDeleting(true); setError("");
+    try { await onDeleteProject(projectId); onClose(); }
+    catch (requestError) { setError(requestError.message); setDeleting(false); setConfirming(false); }
+  };
+  const statusLabel = { todo: ["To do", "blue"], progress: ["In progress", "orange"], review: ["Pending review", "purple"], handoff: ["Owner review", "purple"], approved: ["Approved", "green"] };
+  const members = data?.members || [];
+  const memberIds = new Set(members.map((member) => member.employeeId));
+  const candidates = memberOptions.filter((person) => !memberIds.has(person.id) && String(person.status || "").toLowerCase() !== "inactive" && `${person.name} ${person.email || ""} ${person.title || ""}`.toLowerCase().includes(query.toLowerCase()));
+  const taskTotals = members.reduce((sum, member) => ({ assigned: sum.assigned + member.tasksAssigned, completed: sum.completed + member.tasksCompleted }), { assigned: 0, completed: 0 });
+  return <div className="modal-backdrop" onMouseDown={onClose}><section className="task-details-modal dev-project-modal" onMouseDown={(event) => event.stopPropagation()}>
+    <div className="modal-header"><div>
+      {data ? <><div className="task-detail-id">{data.project.id} · {data.project.status}</div><h2>{data.project.name}</h2><p>{data.project.repo ? data.project.repo.replace(/^https?:\/\//, "") : "No repository linked"} · {members.length} member{members.length === 1 ? "" : "s"} · {data.project.taskCount} task{data.project.taskCount === 1 ? "" : "s"}</p></> : <h2>Project details</h2>}
+    </div><button className="close-button" onClick={onClose}>×</button></div>
+    {error && <p className="auth-error" role="alert">{error}</p>}
+    {notice && <div className="action-error-banner action-notice-banner" role="status"><span>{notice}</span><button type="button" onClick={() => setNotice("")}>×</button></div>}
+    {data && <>{data.project.repo && !data.githubReachable && <p className="auth-error" role="alert">{data.connected ? "GitHub data could not be loaded for this repository right now — task and verified commit data below is still live." : "Connect your own GitHub account (profile ••• → GitHub) so Zippio can read this repository's pull requests and commits."}</p>}
+    <div className="stats-grid stats-grid-four">
+      <StatCard label="Team members" value={members.length} note={`${members.filter((member) => member.githubConnected).length} GitHub connected`} icon="users" />
+      <StatCard label="Tasks" value={data.project.taskCount} note={`${taskTotals.completed} approved`} icon="tasks" tone="green" />
+      <StatCard label="Pull requests" value={data.pullRequests.length} note={`${data.pullRequests.filter((pr) => pr.state === "open").length} open · ${data.pullRequests.filter((pr) => pr.merged).length} merged`} icon="branch" />
+      <StatCard label="GitHub commits" value={data.commits.length} note={`${members.reduce((sum, member) => sum + member.verifiedCommits, 0)} verified in Zippio`} icon="code" tone="orange" />
+    </div>
+    <div className="dev-tabs">
+      <button className={tab === "team" ? "active" : ""} onClick={() => setTab("team")}>Team ({members.length})</button>
+      <button className={tab === "tasks" ? "active" : ""} onClick={() => setTab("tasks")}>Tasks ({data.tasks.length})</button>
+      <button className={tab === "prs" ? "active" : ""} onClick={() => setTab("prs")}>Pull requests ({data.pullRequests.length})</button>
+      <button className={tab === "commits" ? "active" : ""} onClick={() => setTab("commits")}>Commits ({data.commits.length})</button>
+    </div>
+    {tab === "team" && <div className="dev-manager-team">
+      {members.map((member) => <div className="dev-manager-member-row" key={member.employeeId}>
+        <span className={`avatar ${member.githubConnected ? "" : "member-avatar-muted"}`} title={member.githubConnected ? `GitHub: @${member.githubLogin}` : "GitHub not connected"}>{(member.name || "?").split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase()}</span>
+        <div className="member-option-info"><strong>{member.name}</strong><small>{[member.title, member.githubLogin ? `@${member.githubLogin}` : null].filter(Boolean).join(" · ") || "Employee"}</small></div>
+        <div className="dev-member-mini-stats">
+          <span title="Tasks assigned"><Icon name="tasks" /> {member.tasksAssigned}</span>
+          <span title="Tasks approved (completed)"><Icon name="check" /> {member.tasksCompleted}</span>
+          <span title="GitHub commits"><Icon name="code" /> {member.commits}</span>
+          <span title="Verified commits in Zippio"><Icon name="shield" /> {member.verifiedCommits}</span>
+          <span title="Pull requests"><Icon name="branch" /> {member.pullRequests}</span>
+          <span title="PRs approved or merged"><Icon name="check" /> {member.approvedPullRequests}</span>
+          <span title="PRs merged"><Icon name="branch" /> {member.mergedPullRequests}</span>
+        </div>
+        <span className={`member-git-chip ${member.githubConnected ? "green" : "muted"}`}>{member.githubConnected ? "⌘ Git connected" : "Git not connected"}</span>
+        <Badge tone={member.role === "lead" ? "blue" : "neutral"}>{member.role === "lead" ? "Lead" : "Member"}</Badge>
+        {member.role !== "lead" && <button type="button" className="small-button small-button-reject" disabled={Boolean(busy)} onClick={() => removeMember(member)}>{busy === member.employeeId ? "Removing…" : "Remove"}</button>}
+      </div>)}
+      {!members.length && <p className="detail-empty">No members yet. Add teammates below.</p>}
+      <div className="panel-header project-members-heading"><div><h3>Add teammates</h3><p>Pick employees to add — GitHub-connected ones receive a repository invite automatically.</p></div></div>
+      <div className="toolbar"><div className="search"><span>⌕</span><input placeholder="Search employees..." value={query} onChange={(event) => setQuery(event.target.value)} /></div></div>
+      <div className="dev-add-member-list">{candidates.map((person) => <div className="member-option" key={person.id}>
+        <span className="avatar">{person.initials}</span>
+        <div className="member-option-info"><strong>{person.name}</strong><small>{person.title || "Employee"}</small></div>
+        <span className={`member-git-chip ${person.githubConnected ? "green" : "muted"}`}>{person.githubConnected ? "⌘ Git connected" : "Git not connected"}</span>
+        <button type="button" className="small-button" disabled={Boolean(busy)} onClick={() => addMember(person.id)}>{busy === person.id ? "Adding…" : "Add"}</button>
+      </div>)}
+      {!candidates.length && <p className="detail-empty">No employees left to add.</p>}</div>
+      {data.project.repo && <div className="dev-invite-retry"><button type="button" className="link-button" onClick={() => { api.projects.sendRepoInvites(projectId).then((result) => {
+        if (result.error === "creator-not-connected") setNotice("Connect your GitHub account (profile ••• → GitHub) first — then send repository invites again.");
+        else {
+          const sent = (result.invites || []).filter((invite) => invite.status === "invited").length;
+          const already = (result.invites || []).filter((invite) => invite.status === "already-collaborator").length;
+          const missing = (result.invites || []).filter((invite) => invite.status === "github-not-connected").length;
+          const failed = (result.invites || []).filter((invite) => ["no-access", "not-found", "failed"].includes(invite.status)).length;
+          setNotice(`Repository invites: ${sent} sent${already ? `, ${already} already have access` : ""}${missing ? `, ${missing} need to connect GitHub` : ""}${failed ? `, ${failed} failed` : ""}.`);
+        }
+      }).catch((inviteError) => setError(inviteError.message)); }}>Resend repository invites to all GitHub-connected members</button></div>}
+    </div>}
+    {tab === "tasks" && (data.tasks.length ? <div className="commit-list">{data.tasks.map((task) => (
+      <div className="commit-row" key={task.id}>
+        <span className="commit-sha">{task.id}</span>
+        <div className="commit-info"><strong>{task.title}</strong><small>{task.assignee ? `${task.assignee} · ` : ""}{task.commitCount ? `${task.commitCount} verified commit${task.commitCount > 1 ? "s" : ""} · ` : ""}+{task.points} pts</small></div>
+        <Badge tone={(statusLabel[task.status] || statusLabel.todo)[1]}>{(statusLabel[task.status] || statusLabel.todo)[0]}</Badge>
+      </div>
+    ))}</div> : <p className="detail-empty">No tasks assigned in this project yet.</p>)}
+    {tab === "prs" && (data.pullRequests.length ? <div className="dev-pr-list">{data.pullRequests.map((pr) => (
+      <div className="commit-row dev-pr-row" key={pr.number}>
+        <span className="dev-pr-number">#{pr.number}</span>
+        <div className="commit-info"><strong>{pr.title}</strong><small>{pr.author ? `@${pr.author} · ` : ""}{pr.mergedAt ? `Merged ${new Date(pr.mergedAt).toLocaleString()}` : pr.closedAt && pr.state === "closed" ? `Closed ${new Date(pr.closedAt).toLocaleString()}` : `Opened ${new Date(pr.createdAt).toLocaleString()}`}</small></div>
+        {pullRequestBadge(pr)}
+        <a className="commit-link" href={pr.url} target="_blank" rel="noreferrer" title="Open pull request on GitHub">↗</a>
+      </div>
+    ))}</div> : <p className="detail-empty">{data.connected ? "No pull requests found in this repository yet." : "Connect your GitHub account to see this repository's pull requests."}</p>)}
+    {tab === "commits" && (data.commits.length ? <DevelopmentCommitList commits={data.commits} emptyMessage="No commits found yet." /> : <p className="detail-empty">{data.connected ? "No commits found in this repository yet." : "Connect your GitHub account to see this repository's commits."}</p>)}
+    <div className="dev-project-danger">
+      {confirming ? <><span>Delete this project permanently? Linked tasks stay but lose their project.</span><button type="button" className="small-button small-button-reject" disabled={deleting} onClick={deleteProject}>{deleting ? "Deleting…" : "Yes, delete project"}</button><button type="button" className="small-button" onClick={() => setConfirming(false)}>Cancel</button></>
+        : <button type="button" className="small-button small-button-reject" onClick={() => setConfirming(true)}>Delete project</button>}
+    </div>
+    </>}
+    {!data && !error && <p className="detail-empty">Loading project details…</p>}
+  </section></div>;
+}
+
+function ProfileModal({ onClose, onSaved }) {
+  const [form, setForm] = useState(null);
+  const [isEmployee, setIsEmployee] = useState(false);
+  const [email, setEmail] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    api.account.profile().then((profile) => {
+      setIsEmployee(Boolean(profile.isEmployee));
+      setEmail(profile.email || "");
+      setForm({
+        displayName: profile.displayName || "",
+        name: profile.isEmployee ? (profile.name || profile.displayName || "") : (profile.displayName || ""),
+        title: profile.title || "",
+      });
+    }).catch((loadError) => setError(loadError.message));
+  }, []);
+  const update = (key) => (event) => setForm((current) => ({ ...current, [key]: event.target.value }));
+  const submit = async (event) => {
+    event.preventDefault();
+    if (!form) return;
+    setSaving(true);
+    setError("");
+    try {
+      const payload = { displayName: form.displayName.trim() };
+      if (isEmployee) {
+        payload.name = form.name.trim();
+        if (form.title.trim()) payload.title = form.title.trim();
+      }
+      const result = await api.account.updateProfile(payload);
+      await onSaved(result);
+      onClose();
+    } catch (saveError) {
+      setError(saveError.message);
+    } finally { setSaving(false); }
+  };
+  return <div className="modal-backdrop" onMouseDown={onClose}><form className="modal account-modal" onSubmit={submit} onMouseDown={(event) => event.stopPropagation()}>
+    <div className="modal-header"><div><h2>Your profile</h2><p>Update how your name appears across Zippio.</p></div><button type="button" className="close-button" onClick={onClose}>×</button></div>
+    {error && <p className="auth-error" role="alert">{error}</p>}
+    {form && <div className="form-grid">
+      <label className="field">Work email<input type="email" value={email} disabled /></label>
+      <label className="field">Display name<input required minLength="2" maxLength="80" value={form.displayName} onChange={update("displayName")} placeholder="e.g. Ayesha Rahman" /></label>
+      {isEmployee && <><label className="field">Full name<input required minLength="2" maxLength="80" value={form.name} onChange={update("name")} placeholder="e.g. Ayesha Rahman" /></label>
+      <label className="field">Job title<input minLength="2" maxLength="80" value={form.title} onChange={update("title")} placeholder="e.g. Senior Designer" /></label></>}
+      {!isEmployee && <p className="detail-empty">Display name is used everywhere for your account. Job titles belong to employee profiles.</p>}
+    </div>}
+    {!form && !error && <p className="detail-empty">Loading profile…</p>}
+    <div className="modal-footer"><Button type="button" variant="secondary" onClick={onClose}>Cancel</Button><Button type="submit" disabled={saving || !form} icon="check">{saving ? "Saving…" : "Save profile"}</Button></div>
+  </form></div>;
+}
+
+function SettingsModal({ onClose }) {
+  const [form, setForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [done, setDone] = useState(false);
+  const update = (key) => (event) => setForm((current) => ({ ...current, [key]: event.target.value }));
+  const submit = async (event) => {
+    event.preventDefault();
+    if (form.newPassword !== form.confirmPassword) { setError("The two new passwords do not match"); return; }
+    setSaving(true);
+    setError("");
+    try {
+      await api.account.changePassword(form.currentPassword, form.newPassword);
+      setDone(true);
+      setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    } catch (saveError) {
+      setError(saveError.message);
+    } finally { setSaving(false); }
+  };
+  return <div className="modal-backdrop" onMouseDown={onClose}><form className="modal account-modal" onSubmit={submit} onMouseDown={(event) => event.stopPropagation()}>
+    <div className="modal-header"><div><h2>Settings</h2><p>Manage your account security.</p></div><button type="button" className="close-button" onClick={onClose}>×</button></div>
+    {error && <p className="auth-error" role="alert">{error}</p>}
+    {done && <div className="success-message">Password updated successfully. Use it on your next sign-in.</div>}
+    <div className="form-grid">
+      <label className="field full">Current password<input type="password" required autoComplete="current-password" value={form.currentPassword} onChange={update("currentPassword")} /></label>
+      <label className="field">New password<input type="password" required minLength="8" autoComplete="new-password" value={form.newPassword} onChange={update("newPassword")} placeholder="At least 8 characters" /></label>
+      <label className="field">Confirm new password<input type="password" required minLength="8" autoComplete="new-password" value={form.confirmPassword} onChange={update("confirmPassword")} /></label>
+    </div>
+    <div className="modal-footer"><Button type="button" variant="secondary" onClick={onClose}>Close</Button><Button type="submit" disabled={saving} icon="check">{saving ? "Updating…" : "Change password"}</Button></div>
+  </form></div>;
+}
+
+function GitHubModal({ onClose }) {
+  const [status, setStatus] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    api.github.status().then(setStatus).catch((loadError) => setError(loadError.message));
+  }, []);
+  const connect = async () => {
+    setBusy(true);
+    setError("");
+    try {
+      const { url } = await api.github.start();
+      window.location.assign(url);
+    } catch (connectError) {
+      setError(connectError.message);
+      setBusy(false);
+    }
+  };
+  const disconnect = async () => {
+    setBusy(true);
+    setError("");
+    try {
+      await api.github.disconnect();
+      setStatus({ connected: false, login: null });
+    } catch (disconnectError) {
+      setError(disconnectError.message);
+    } finally { setBusy(false); }
+  };
+  return <div className="modal-backdrop" onMouseDown={onClose}><section className="modal account-modal" onMouseDown={(event) => event.stopPropagation()}>
+    <div className="modal-header"><div><h2>GitHub connection</h2><p>Connect GitHub so Zippio can verify your commits and show your development activity.</p></div><button className="close-button" onClick={onClose}>×</button></div>
+    {error && <p className="auth-error" role="alert">{error}</p>}
+    {status && (status.connected ? <div className="github-status-connected"><span className="upload-icon">✓</span><div><strong>Connected as @{status.login}</strong><small>Since {new Date(status.connectedAt).toLocaleString()}</small></div><Button variant="secondary" onClick={disconnect} disabled={busy}>{busy ? "Disconnecting…" : "Disconnect"}</Button></div>
+      : <div className="github-status-connected"><span className="upload-icon">⌘</span><div><strong>Not connected yet</strong><small>Connect to unlock commit verification and your Development page activity.</small></div><Button onClick={connect} disabled={busy}>{busy ? "Redirecting…" : "Connect GitHub"}</Button></div>)}
+    {!status && !error && <p className="detail-empty">Checking connection…</p>}
+  </section></div>;
+}
+
 function EmployeeDashboard({ employee, employees = [], tasks, onStart, onSubmit, onOpen, setPage, attendance, onCheckIn, onCheckOut }) {
   const points = employee.points, level = levelFor(points), kpi = kpiFor(employee), mine = tasks.filter((task) => task.employeeId === employee.id), teamAverage = employees.length ? employees.reduce((sum, person) => sum + kpiFor(person), 0) / employees.length : 0;
   const openTasks = mine.filter((task) => task.status !== "approved").length;
   const dueThisWeek = mine.filter((task) => { if (task.status === "approved" || !task.deadline) return false; const due = new Date(task.deadline); const now = new Date(); const start = new Date(now); start.setDate(now.getDate() - now.getDay()); start.setHours(0, 0, 0, 0); const end = new Date(start); end.setDate(start.getDate() + 7); return due >= start && due < end; }).length;
   const isToday = attendance.date === todayKey(), active = isToday && attendance.checkIn && !attendance.checkOut, completed = isToday && attendance.checkIn && attendance.checkOut;
-  return <><Header title={`Good morning, ${employee.name.split(" ")[0]} 👋`} subtitle="Here's what's happening with your work today." onMenu={() => {}} notifications={openTasks} /><section className="welcome-strip"><div className="attendance-day"><strong>{formatDate()}</strong><div className="attendance-status"><Badge tone={active || completed ? "green" : "neutral"}>{active ? "● Checked in" : completed ? "● Day complete" : "● Not checked in"}</Badge>{attendance.checkIn && isToday && <span>Since {formatTime(attendance.checkIn)}</span>}</div></div><div className="attendance-actions">{active ? <Button variant="secondary" onClick={onCheckOut}>Check out</Button> : <Button variant={completed ? "danger" : "primary"} onClick={onCheckIn} disabled={completed}>{completed ? "Checked out" : "Check in"}</Button>}</div></section><div className="stats-grid"><StatCard label="To do" value={mine.filter((t) => t.status === "todo").length} note={`${dueThisWeek} due this week`} icon="tasks" /><StatCard label="In progress" value={mine.filter((t) => t.status === "progress").length} note="Keep it up!" icon="chart" tone="orange" /><StatCard label="KPI score" value={kpi.toFixed(1)} note="Weighted W2G score" icon="chart" tone="purple" /><StatCard label="Growth points" value={points} note={`Level ${level.index + 1} · ${level.title}`} icon="users" tone="green" /></div><div className="content-grid"><section className="panel"><div className="panel-header"><div><h2>Your tasks</h2><p>Stay on top of your assigned work.</p></div><button className="link-button" onClick={() => setPage("tasks")}>View all <Icon name="arrow" /></button></div><div className="task-list">{mine.filter((t) => t.status !== "approved").slice(0, 3).map((task) => <TaskCard key={task.id} task={task} onOpen={onOpen} onStart={onStart} onSubmit={onSubmit} />)}</div></section><section className="panel growth-panel"><div className="panel-header"><div><h2>Your growth</h2><p>W2G performance overview.</p></div><button className="link-button" onClick={() => setPage("performance")}>Details <Icon name="arrow" /></button></div><div className="growth-score"><div className="score-ring"><strong>{kpi.toFixed(0)}</strong><small>/ 100</small></div><div><strong>{kpi >= teamAverage ? "Great progress!" : "Keep pushing!"}</strong><p>Your score is {kpi >= teamAverage ? "above" : "below"} the team average of {teamAverage.toFixed(1)}.</p></div></div><div className="metric-list">{dimensions.map(([name, weight], i) => <div className="metric" key={name}><div><span>{name}</span><b>{employee.scores?.[i] ?? 0}</b></div><ProgressBar value={employee.scores?.[i] ?? 0} color={i === 1 ? "purple" : "blue"} /><small>Weight {weight}%</small></div>)}</div></section></div></>;
+  return <><Header title={`Good morning, ${employee.name.split(" ")[0]}`} subtitle="Here's what's happening with your work today." onMenu={() => {}} notifications={openTasks} /><section className="welcome-strip"><div className="attendance-day"><strong>{formatDate()}</strong><div className="attendance-status"><Badge tone={active || completed ? "green" : "neutral"}>{active ? "● Checked in" : completed ? "● Day complete" : "● Not checked in"}</Badge>{attendance.checkIn && isToday && <span>Since {formatTime(attendance.checkIn)}</span>}</div></div><div className="attendance-actions">{active ? <Button variant="secondary" onClick={onCheckOut}>Check out</Button> : <Button variant={completed ? "danger" : "primary"} onClick={onCheckIn} disabled={completed}>{completed ? "Checked out" : "Check in"}</Button>}</div></section><div className="stats-grid"><StatCard label="To do" value={mine.filter((t) => t.status === "todo").length} note={`${dueThisWeek} due this week`} icon="tasks" /><StatCard label="In progress" value={mine.filter((t) => t.status === "progress").length} note="Keep it up!" icon="chart" tone="orange" /><StatCard label="KPI score" value={kpi.toFixed(1)} note="Weighted W2G score" icon="chart" tone="purple" /><StatCard label="Growth points" value={points} note={`Level ${level.index + 1} · ${level.title}`} icon="users" tone="green" /></div><button className="dev-quick-link" onClick={() => setPage("development")}><span className="stat-icon purple"><Icon name="code" /></span><div><strong>Development</strong><small>Your pull requests, commit history & PR approvals</small></div><Icon name="arrow" /></button><div className="content-grid"><section className="panel"><div className="panel-header"><div><h2>Your tasks</h2><p>Stay on top of your assigned work.</p></div><button className="link-button" onClick={() => setPage("tasks")}>View all <Icon name="arrow" /></button></div><div className="task-list">{mine.filter((t) => t.status !== "approved").slice(0, 3).map((task) => <TaskCard key={task.id} task={task} onOpen={onOpen} onStart={onStart} onSubmit={onSubmit} />)}</div></section><section className="panel growth-panel"><div className="panel-header"><div><h2>Your growth</h2><p>W2G performance overview.</p></div><button className="link-button" onClick={() => setPage("performance")}>Details <Icon name="arrow" /></button></div><div className="growth-score"><div className="score-ring"><strong>{kpi.toFixed(0)}</strong><small>/ 100</small></div><div><strong>{kpi >= teamAverage ? "Great progress!" : "Keep pushing!"}</strong><p>Your score is {kpi >= teamAverage ? "above" : "below"} the team average of {teamAverage.toFixed(1)}.</p></div></div><div className="metric-list">{dimensions.map(([name, weight], i) => <div className="metric" key={name}><div><span>{name}</span><b>{employee.scores?.[i] ?? 0}</b></div><ProgressBar value={employee.scores?.[i] ?? 0} color={i === 1 ? "purple" : "blue"} /><small>Weight {weight}%</small></div>)}</div></section></div></>;
 }
 
 function TasksPage({ tasks, employees, role, employee, delegationRequests = [], onDelegation, onStart, onSubmit, onCreate, onOpen, onReview }) {
@@ -325,7 +841,7 @@ function ReviewPage({ tasks, employees, delegationRequests, onReview, onDelegati
 }
 
 function RequestStatus({ status }) {
-  const tone = status === "Completed" ? "green" : status === "In progress" ? "blue" : "orange";
+  const tone = status === "Completed" ? "green" : status === "In progress" ? "blue" : status === "Rejected" ? "red" : "orange";
   return <Badge tone={tone}>{status}</Badge>;
 }
 
@@ -347,16 +863,22 @@ function RequestDetails({ request, onClose, onUpdate, onAddComment }) {
   return <div className="modal-backdrop" onMouseDown={onClose}><section className="request-details-modal" onMouseDown={(event) => event.stopPropagation()}><div className="modal-header"><div><div className="task-detail-id">{request.id}</div><h2>{request.requirement}</h2><p>{request.type} · {request.department}</p></div><button className="close-button" onClick={onClose}>×</button></div><div className="request-detail-summary"><RequestStatus status={status} /><span>{progress}% complete</span><ProgressBar value={progress} /></div><div className="request-detail-grid"><div><span className="eyebrow">Requester</span><strong>{request.requester || request.manager || "—"}</strong><small>{request.department}</small></div><div><span className="eyebrow">Department manager</span><strong>{request.manager || request.officer || "Unassigned"}</strong><small>Approval owner</small></div><div><span className="eyebrow">Required by</span><strong>{request.deadline ? new Date(request.deadline).toLocaleDateString() : "—"}</strong><small>Priority: {request.priority}</small></div></div>{request.details && <div className="request-detail-section"><h3>Request details</h3><p>{request.details}</p></div>}<div className="request-detail-section"><h3>Update request</h3><div className="form-grid"><label className="field">Status<select value={status} onChange={(event) => setStatus(event.target.value)}><option>Pending approval</option><option>In progress</option><option>Completed</option><option>Rejected</option></select></label><label className="field">Progress (%)<input type="number" min="0" max="100" value={progress} onChange={(event) => setProgress(event.target.value)} /></label></div><Button disabled={busy} onClick={saveRequest}>Save request update</Button></div><div className="request-detail-section"><h3>Activity & comments <Badge tone="neutral">{comments.length}</Badge></h3>{comments.map((item) => <div className="detail-empty" key={item.id} style={{ marginBottom: 8 }}><strong>{item.author || "User"}</strong><p>{item.body}</p><small>{new Date(item.created_at).toLocaleString()}</small></div>)}{!comments.length && <p className="detail-empty">No comments yet.</p>}<form onSubmit={saveComment} style={{ marginTop: 12 }}><label className="field">Add a comment<textarea value={comment} onChange={(event) => setComment(event.target.value)} required maxLength={10000} /></label><Button disabled={busy || !comment.trim()} type="submit">Add comment</Button></form></div><div className="modal-footer"><Button variant="secondary" onClick={onClose}>Close</Button></div></section></div>;
 }
 
-function HrDashboard({ requests, employees, attendanceRows, leaveRequests, setPage, onOpenRequest, onCreate }) {
+function HrDashboard({ requests, employees, attendanceRows, leaveRequests, reportSummary, setPage, onOpenRequest, onCreate }) {
   const inProgress = requests.filter((request) => request.status === "In progress").length;
   const pending = requests.filter((request) => request.status === "Pending approval").length;
   const today = todayKey();
   const presentIds = new Set(attendanceRows.filter((row) => attendanceDate(row.work_date) === today && row.check_in).map((row) => row.employee_code));
-  const leaveToday = leaveRequests.filter((row) => row.status === "Approved" && row.start_date <= today && row.end_date >= today).length;
-  const departments = [...new Set(employees.map((employee) => employee.department).filter(Boolean))];
+  const leaveToday = Number(reportSummary?.leaveToday?.on_leave ?? leaveRequests.filter((row) => row.status === "Approved" && row.start_date <= today && row.end_date >= today).length);
+  const presentCount = Number(reportSummary?.attendanceToday?.present ?? presentIds.size);
+  const departmentStats = reportSummary?.departments || [...new Set(employees.map((employee) => employee.department).filter(Boolean))].map((name) => {
+    const members = employees.filter((employee) => employee.department === name);
+    return { name, employees: members.length, average_kpi: members.reduce((sum, employee) => sum + kpiFor(employee), 0) / (members.length || 1) };
+  });
+  const departments = departmentStats.map((department) => department.name);
+  const headcount = Number(reportSummary?.employees?.count ?? employees.length);
   const todayRows = attendanceRows.filter((row) => attendanceDate(row.work_date) === today && row.check_in).sort((a, b) => new Date(b.check_in) - new Date(a.check_in));
   const openRequests = requests.filter((request) => !["Completed", "Rejected"].includes(request.status)).length;
-  return <><Header title="HR command center" subtitle="Organization-wide workforce visibility at a glance." onMenu={() => {}} onCreate={onCreate} createLabel="Create request" notifications={pending + leaveRequests.filter((row) => row.status === "Pending approval").length} /><section className="hr-hero"><div><Badge tone="light">CORPORATE HR & WORKFORCE PLATFORM</Badge><h2>People operations, made visible.</h2><p>Monitor workforce health, move requests forward, and keep every team supported.</p></div><div className="hr-hero-metrics"><span><strong>{departments.length}</strong> departments</span><span><strong>{employees.length}</strong> employees</span></div></section><div className="stats-grid manager-stats"><StatCard label="Total employees" value={employees.length} note={`${departments.length} departments`} icon="users" /><StatCard label="Present today" value={`${presentIds.size} / ${employees.length}`} note={employees.length ? `${Math.round(presentIds.size / employees.length * 100)}% checked in` : "No employees"} icon="check" tone="green" /><StatCard label="On leave today" value={leaveToday} note="Approved leave requests" icon="calendar" tone="purple" /><StatCard label="Open HR requests" value={openRequests} note={`${inProgress} in progress · ${pending} pending`} icon="tasks" tone="orange" /></div><section className="panel live-attendance-panel"><div className="panel-header"><div><h2>Today's attendance</h2><p>Check-in records for {formatDate()}.</p></div><Button variant="secondary" onClick={() => setPage("leave")}>Attendance & leave</Button></div>{todayRows.length ? todayRows.map((row) => { const person = employees.find((employee) => employee.id === row.employee_code); return <div className="live-attendance-row" key={row.id}><span className="avatar">{person?.initials || "EM"}</span><div><strong>{person?.name || row.employee_code}</strong><small>{person?.department || ""} · Checked in {formatTime(row.check_in)}</small></div><Badge tone={row.check_out ? "neutral" : "green"}>{row.check_out ? `Checked out ${formatTime(row.check_out)}` : "Working"}</Badge></div>; }) : <p className="detail-empty">No attendance check-ins recorded today.</p>}</section><div className="hr-module-grid"><section className="panel"><div className="panel-header"><div><h2>HR request tracking</h2><p>Latest requests and their current progress.</p></div><button className="link-button" onClick={() => setPage("requests")}>View all <Icon name="arrow" /></button></div><div className="request-list">{requests.slice(0, 5).map((request) => <button className="request-row" key={request.id} onClick={() => onOpenRequest(request)}><span className="request-type-icon">{request.type === "Equipment request" ? "▣" : request.type === "Training request" ? "✦" : "♙"}</span><div className="request-main"><div><strong>{request.requirement}</strong><span>{request.id} · {request.department} · {request.requester || request.manager || "HR team"}</span></div><RequestStatus status={request.status} /></div><div className="request-progress"><ProgressBar value={request.progress} /><small>{request.progress}%</small></div></button>)}{!requests.length && <p className="detail-empty">No HR requests yet.</p>}</div></section><section className="panel workforce-panel"><div className="panel-header"><div><h2>Workforce overview</h2><p>Employee count and KPI by department.</p></div><button className="link-button" onClick={() => setPage("analytics")}>Analytics <Icon name="arrow" /></button></div>{departments.map((name) => { const members = employees.filter((employee) => employee.department === name); const score = members.reduce((sum, employee) => sum + kpiFor(employee), 0) / (members.length || 1); return <div className="department-row" key={name}><div><strong>{name}</strong><small>{members.length} employees</small></div><div className="department-score"><ProgressBar value={score} color={score >= 85 ? "green" : "purple"} /><span>{score.toFixed(1)}</span></div></div>; })}{!departments.length && <p className="detail-empty">No department data available.</p>}</section></div><section className="panel command-modules"><div className="panel-header"><div><h2>HR management modules</h2><p>Open an operational area.</p></div></div><div className="module-cards">{[["Employee lifecycle", "Profiles and performance", "users", "employees"], ["Attendance & leave", "Presence and leave requests", "clock", "leave"], ["Performance & KPI", "Team KPI overview", "chart", "analytics"], ["Helpdesk & support", "Employee tickets and issues", "bell", "support"]].map(([title, description, icon, pageId]) => <button className="module-card" key={title} onClick={() => setPage(pageId)}><span className="module-icon"><Icon name={icon} /></span><strong>{title}</strong><small>{description}</small><Icon name="arrow" /></button>)}</div></section></>;
+  return <><Header title="HR command center" subtitle="Organization-wide workforce visibility at a glance." onMenu={() => {}} onCreate={onCreate} createLabel="Create request" notifications={pending + leaveRequests.filter((row) => row.status === "Pending approval").length} /><section className="hr-hero"><div><Badge tone="light">CORPORATE HR & WORKFORCE PLATFORM</Badge><h2>People operations, made visible.</h2><p>Monitor workforce health, move requests forward, and keep every team supported.</p></div><div className="hr-hero-metrics"><span><strong>{departments.length}</strong> departments</span><span><strong>{headcount}</strong> employees</span></div></section><div className="stats-grid manager-stats"><StatCard label="Total employees" value={headcount} note={`${departments.length} departments`} icon="users" /><StatCard label="Present today" value={`${presentCount} / ${headcount}`} note={headcount ? `${Math.round(presentCount / headcount * 100)}% checked in` : "No employees"} icon="check" tone="green" /><StatCard label="On leave today" value={leaveToday} note="Approved leave requests" icon="calendar" tone="purple" /><StatCard label="Open HR requests" value={openRequests} note={`${inProgress} in progress · ${pending} pending`} icon="tasks" tone="orange" /></div><section className="panel live-attendance-panel"><div className="panel-header"><div><h2>Today's attendance</h2><p>Check-in records for {formatDate()}.</p></div><Button variant="secondary" onClick={() => setPage("leave")}>Attendance & leave</Button></div>{todayRows.length ? todayRows.map((row) => { const person = employees.find((employee) => employee.id === row.employee_code); return <div className="live-attendance-row" key={row.id}><span className="avatar">{person?.initials || "EM"}</span><div><strong>{person?.name || row.employee_code}</strong><small>{person?.department || ""} · Checked in {formatTime(row.check_in)}</small></div><Badge tone={row.check_out ? "neutral" : "green"}>{row.check_out ? `Checked out ${formatTime(row.check_out)}` : "Working"}</Badge></div>; }) : <p className="detail-empty">No attendance check-ins recorded today.</p>}</section><div className="hr-module-grid"><section className="panel"><div className="panel-header"><div><h2>HR request tracking</h2><p>Latest requests and their current progress.</p></div><button className="link-button" onClick={() => setPage("requests")}>View all <Icon name="arrow" /></button></div><div className="request-list">{requests.slice(0, 5).map((request) => <button className="request-row" key={request.id} onClick={() => onOpenRequest(request)}><span className="request-type-icon">{request.type === "Equipment request" ? "▣" : request.type === "Training request" ? "✦" : "♙"}</span><div className="request-main"><div><strong>{request.requirement}</strong><span>{request.id} · {request.department} · {request.requester || request.manager || "HR team"}</span></div><RequestStatus status={request.status} /></div><div className="request-progress"><ProgressBar value={request.progress} /><small>{request.progress}%</small></div></button>)}{!requests.length && <p className="detail-empty">No HR requests yet.</p>}</div></section><section className="panel workforce-panel"><div className="panel-header"><div><h2>Workforce overview</h2><p>Employee count and KPI by department.</p></div><button className="link-button" onClick={() => setPage("analytics")}>Analytics <Icon name="arrow" /></button></div>{departmentStats.map((department) => <div className="department-row" key={department.name}><div><strong>{department.name}</strong><small>{department.employees} employees</small></div><div className="department-score"><ProgressBar value={Number(department.average_kpi)} color={Number(department.average_kpi) >= 85 ? "green" : "purple"} /><span>{Number(department.average_kpi).toFixed(1)}</span></div></div>)}{!departments.length && <p className="detail-empty">No department data available.</p>}</section></div><section className="panel command-modules"><div className="panel-header"><div><h2>HR management modules</h2><p>Open an operational area.</p></div></div><div className="module-cards">{[["Employee lifecycle", "Profiles and performance", "users", "employees"], ["Attendance & leave", "Presence and leave requests", "clock", "leave"], ["Performance & KPI", "Team KPI overview", "chart", "analytics"], ["Helpdesk & support", "Employee tickets and issues", "bell", "support"]].map(([title, description, icon, pageId]) => <button className="module-card" key={title} onClick={() => setPage(pageId)}><span className="module-icon"><Icon name={icon} /></span><strong>{title}</strong><small>{description}</small><Icon name="arrow" /></button>)}</div></section></>;
 }
 
 function HrRequestsPage({ requests, onOpenRequest, onCreate }) {
@@ -390,17 +912,260 @@ function SupportPage({ tickets, onCreate, onUpdate }) {
   return <><Header title="Helpdesk & support" subtitle="Track employee support tickets and resolve outstanding issues." onMenu={() => {}} notifications={tickets.filter((ticket) => ticket.status === "open").length} /><section className="panel leave-form-panel"><div className="panel-header"><div><h2>Create support ticket</h2><p>Log an employee question or operational issue.</p></div></div><form className="form-grid" onSubmit={submit}><label className="field full">Subject<input required maxLength="200" value={form.subject} onChange={updateField("subject")} /></label><label className="field">Priority<select value={form.priority} onChange={updateField("priority")}><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select></label><label className="field full">Description<textarea required maxLength="10000" value={form.description} onChange={updateField("description")} /></label><div className="form-submit full"><Button type="submit" disabled={saving}>{saving ? "Creating…" : "Create ticket"}</Button></div></form></section><section className="panel"><div className="panel-header"><div><h2>Support tickets</h2><p>{tickets.length} ticket{tickets.length === 1 ? "" : "s"} in this organization.</p></div></div><div className="table-wrap"><table><thead><tr><th>Ticket</th><th>Requester</th><th>Priority</th><th>Status</th><th>Created</th><th>Update status</th></tr></thead><tbody>{tickets.map((ticket) => <tr key={ticket.id}><td><strong>{ticket.subject}</strong><small className="table-subtext">{ticket.id} · {ticket.description}</small></td><td>{ticket.requester || "—"}</td><td><Badge tone={ticket.priority === "Critical" || ticket.priority === "High" ? "red" : "neutral"}>{ticket.priority}</Badge></td><td><Badge tone={ticket.status === "resolved" || ticket.status === "closed" ? "green" : "orange"}>{statusLabel[ticket.status] || ticket.status}</Badge></td><td>{new Date(ticket.created_at).toLocaleDateString()}</td><td><select aria-label={`Update ${ticket.id}`} value={ticket.status} onChange={(event) => onUpdate(ticket.id, event.target.value)}><option value="open">Open</option><option value="in_progress">In progress</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select></td></tr>)}{!tickets.length && <tr><td colSpan="6"><div className="detail-empty">No support tickets yet.</div></td></tr>}</tbody></table></div></section></>;
 }
 
-function TaskModal({ employees, onClose, onCreate }) {
-  const defaultDeadline = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16);
-  const [form, setForm] = useState({ title: "", employeeId: employees[0].id, priority: "Medium", hours: 4, points: 15, deadlineDate: defaultDeadline.slice(0, 10), deadlineTime: defaultDeadline.slice(11, 16), description: "", attachment: null, attachmentName: "", githubRepo: "", additionalReferenceUrl: "" });
-  const update = (key) => (e) => setForm((current) => ({ ...current, [key]: e.target.value }));
-  const updatePriority = (event) => {
-    const priority = event.target.value;
-    const points = { Low: 10, Medium: 15, High: 20, Critical: 30 }[priority];
-    setForm((current) => ({ ...current, priority, points }));
+const TASK_BASE_POINTS = { Low: 10, Medium: 15, High: 20, Critical: 30 };
+const TASK_PRIORITY_TONES = { Low: "neutral", Medium: "blue", High: "orange", Critical: "red" };
+
+function TaskModal({ employees, projects = [], onClose, onCreate }) {
+  const defaultDeadline = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const pad = (value) => String(value).padStart(2, "0");
+  const defaultDate = `${defaultDeadline.getFullYear()}-${pad(defaultDeadline.getMonth() + 1)}-${pad(defaultDeadline.getDate())}`;
+  const [form, setForm] = useState({ title: "", employeeId: employees[0]?.id || "", priority: "Medium", hours: 4, deadlineDate: defaultDate, deadlineTime: "18:00", description: "", projectId: "" });
+  const [files, setFiles] = useState([]);
+  const [repos, setRepos] = useState([]);
+  const [links, setLinks] = useState([]);
+  const [refType, setRefType] = useState("");
+  const [repoUrl, setRepoUrl] = useState("");
+  const [linkUrl, setLinkUrl] = useState("");
+  const [pickedFile, setPickedFile] = useState(null);
+  const [error, setError] = useState("");
+  const update = (key) => (event) => setForm((current) => ({ ...current, [key]: event.target.value }));
+  const updatePriority = (level) => setForm((current) => ({ ...current, priority: level }));
+  const updateProject = (event) => {
+    const projectId = event.target.value;
+    const project = projects.find((item) => item.id === projectId);
+    const members = project?.members?.length ? employees.filter((person) => project.members.some((member) => member.employeeId === person.id)) : employees;
+    setForm((current) => ({ ...current, projectId, employeeId: members.some((person) => person.id === current.employeeId) ? current.employeeId : (members[0]?.id || "") }));
   };
-  const handleFile = (attachment) => setForm({ ...form, attachment, attachmentName: attachment?.name || "" });
-  return <div className="modal-backdrop" onMouseDown={onClose}><div className="modal" onMouseDown={(e) => e.stopPropagation()}><div className="modal-header"><div><h2>Create a new task</h2><p>Assign work and define expectations clearly.</p></div><button className="close-button" onClick={onClose}>×</button></div><div className="form-grid"><label className="field full">Task title<input autoFocus required value={form.title} onChange={update("title")} placeholder="e.g. Design login page" /></label><label className="field">Assign to<select value={form.employeeId} onChange={update("employeeId")}>{employees.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}</select></label><label className="field">Priority<select value={form.priority} onChange={updatePriority}><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select></label><label className="field">Estimated hours<input type="number" min="0.25" step="0.25" required value={form.hours} onChange={update("hours")} /></label><label className="field">Base points<input type="number" min="0" step="1" required value={form.points} onChange={update("points")} /></label><label className="field">Start time<div className="readonly-field"><span>{new Date().toLocaleDateString("en-BD", { timeZone: "Asia/Dhaka" })}</span><span>{new Date().toLocaleTimeString("en-BD", { timeZone: "Asia/Dhaka", hour: "2-digit", minute: "2-digit" })}</span></div></label><div className="field"><span>Deadline date & time</span><div className="datetime-split"><input type="date" required aria-label="Deadline date" value={form.deadlineDate} onChange={update("deadlineDate")} /><input type="time" required aria-label="Deadline time" value={form.deadlineTime} onChange={update("deadlineTime")} /></div></div><label className="field full">Task description<textarea value={form.description} onChange={update("description")} placeholder="Describe task requirements..." /></label><div className="field full"><div className="field-label-row"><span>Attachment</span><span className="optional-label">Optional</span></div><AttachmentPicker file={form.attachment} onChange={handleFile} /></div><label className="field full">GitHub repository <span className="optional-label">Optional</span><input type="url" value={form.githubRepo} onChange={update("githubRepo")} placeholder="https://github.com/owner/repository" /></label><label className="field full">Additional reference link <span className="optional-label">Optional</span><input type="url" value={form.additionalReferenceUrl} onChange={update("additionalReferenceUrl")} placeholder="https://example.com/resource" /></label></div><div className="modal-footer"><Button variant="secondary" onClick={onClose}>Cancel</Button><Button onClick={() => form.title.trim() && onCreate({ ...form, deadline: new Date(`${form.deadlineDate}T${form.deadlineTime}`).toISOString(), hours: Number(form.hours), points: Number(form.points) })}>Create task</Button></div></div></div>;
+  const selectedProject = projects.find((project) => project.id === form.projectId);
+  const assignable = selectedProject?.members?.length ? employees.filter((person) => selectedProject.members.some((member) => member.employeeId === person.id)) : employees;
+  const addFile = () => {
+    if (!pickedFile) return;
+    setFiles((current) => [...current, pickedFile]);
+    setPickedFile(null);
+    setRefType("");
+  };
+  const addRepo = () => {
+    const url = repoUrl.trim();
+    if (!url) return;
+    setRepos((current) => [...current, url]);
+    setRepoUrl("");
+    setRefType("");
+  };
+  const addLink = () => {
+    const url = linkUrl.trim();
+    if (!url) return;
+    setLinks((current) => [...current, url]);
+    setLinkUrl("");
+    setRefType("");
+  };
+  const referenceCount = files.length + repos.length + links.length;
+  const create = () => {
+    if (!form.title.trim() || !form.employeeId) return;
+    const pendingFiles = pickedFile && !files.some((item) => item.name === pickedFile.name && item.size === pickedFile.size) ? [...files, pickedFile] : files;
+    const pendingRepos = repoUrl.trim() && !repos.includes(repoUrl.trim()) ? [...repos, repoUrl.trim()] : repos;
+    const pendingLinks = linkUrl.trim() && !links.includes(linkUrl.trim()) ? [...links, linkUrl.trim()] : links;
+    onCreate({ ...form, deadline: new Date(`${form.deadlineDate}T${form.deadlineTime}`).toISOString(), hours: Number(form.hours), points: TASK_BASE_POINTS[form.priority], files: pendingFiles, repos: pendingRepos, links: pendingLinks });
+  };
+  return <div className="modal-backdrop" onMouseDown={onClose}><div className="modal task-modal" onMouseDown={(event) => event.stopPropagation()}>
+    <div className="modal-header"><div><h2>Create a new task</h2><p>Assign work and define expectations clearly.</p></div><button className="close-button" onClick={onClose}>×</button></div>
+    <div className="form-grid">
+      <label className="field full">Task title<input autoFocus required value={form.title} onChange={update("title")} placeholder="e.g. Design login page" /></label>
+      <label className="field">Project<select value={form.projectId} onChange={updateProject}><option value="">No project</option>{projects.map((project) => <option key={project.id} value={project.id}>{project.name}</option>)}</select></label>
+      <label className="field">Assign to<select value={form.employeeId} onChange={update("employeeId")} required>{assignable.length ? assignable.map((person) => <option key={person.id} value={person.id}>{person.name}{selectedProject?.members ? "" : ""}</option>) : <option value="">No members available</option>}</select>{selectedProject && <small className="field-hint">Only {selectedProject.name} members can be assigned ({assignable.length} member{assignable.length === 1 ? "" : "s"}).</small>}</label>
+      <label className="field">Priority<select value={form.priority} onChange={(event) => updatePriority(event.target.value)}><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select></label>
+      <label className="field">Base points<div className="readonly-field points-locked"><Icon name="lock" /><strong>{TASK_BASE_POINTS[form.priority]}</strong></div></label>
+      <label className="field">Start time<div className="readonly-field"><span>{new Date().toLocaleDateString("en-BD", { timeZone: "Asia/Dhaka" })}</span><span>{new Date().toLocaleTimeString("en-BD", { timeZone: "Asia/Dhaka", hour: "2-digit", minute: "2-digit" })}</span></div></label>
+      <div className="field deadline-field"><span>Deadline date & time</span><div className="datetime-split"><input type="date" required aria-label="Deadline date" value={form.deadlineDate} onChange={update("deadlineDate")} /><input type="time" required aria-label="Deadline time" value={form.deadlineTime} onChange={update("deadlineTime")} /></div></div>
+      <label className="field full task-desc-field"><span className="field-label-row"><span>Task description</span><small className={`desc-counter ${form.description.length > 4000 ? "warn" : ""}`}>{form.description.length} / 10,000</small></span><textarea value={form.description} onChange={update("description")} rows={5} placeholder={"Describe the requirements, expected output and any acceptance criteria…\n\nExample:\n• Build the login page as per the attached design\n• Responsive for mobile and desktop\n• Submit with a GitHub commit link before the deadline"} /></label>
+      <div className="field full ref-builder">
+        <div className="field-label-row"><span>Reference documents</span><span className="optional-label">Optional · add as many as needed</span></div>
+        <div className="ref-add-row"><select value={refType} onChange={(event) => setRefType(event.target.value)}><option value="">Choose what to add…</option><option value="file">Document file (PDF, DOC, XLS, PNG, ZIP)</option><option value="repo">GitHub repository</option><option value="link">Reference link</option></select>{refType === "file" && <Button type="button" variant="secondary" className="add-file-button" disabled={!pickedFile} onClick={addFile}>Add file</Button>}{refType === "repo" && <Button type="button" variant="secondary" disabled={!repoUrl.trim()} onClick={addRepo}>Add repository</Button>}{refType === "link" && <Button type="button" variant="secondary" disabled={!linkUrl.trim()} onClick={addLink}>Add link</Button>}</div>
+        {refType === "file" && <AttachmentPicker file={pickedFile} onChange={setPickedFile} />}
+        {refType === "repo" && <input type="url" value={repoUrl} onChange={(event) => setRepoUrl(event.target.value)} placeholder="https://github.com/owner/repository" />}
+        {refType === "link" && <input type="url" value={linkUrl} onChange={(event) => setLinkUrl(event.target.value)} placeholder="https://example.com/resource" />}
+        {referenceCount > 0 && <div className="ref-list">{files.map((file, index) => <span className="ref-chip" key={`${file.name}-${index}`}><Icon name="file" />{file.name}<small>{(file.size / 1024 / 1024).toFixed(2)} MB</small><button type="button" className="ref-chip-remove" title="Remove" onClick={() => setFiles((current) => current.filter((item) => item !== file))}>×</button></span>)}{repos.map((url, index) => <span className="ref-chip" key={`${url}-${index}`}><Icon name="branch" />{url.replace(/^https?:\/\//, "")}<button type="button" className="ref-chip-remove" title="Remove" onClick={() => setRepos((current) => current.filter((item) => item !== url))}>×</button></span>)}{links.map((url, index) => <span className="ref-chip" key={`${url}-${index}`}><Icon name="link" />{url.replace(/^https?:\/\//, "")}<button type="button" className="ref-chip-remove" title="Remove" onClick={() => setLinks((current) => current.filter((item) => item !== url))}>×</button></span>)}</div>}
+        <small className="field-hint">Everything added here is sent to the assignee as reference documents with the task — they can open or download each one.</small>
+      </div>
+    </div>
+    {error && <p className="auth-error" role="alert">{error}</p>}
+    <div className="modal-footer"><Button type="button" variant="secondary" onClick={onClose}>Cancel</Button><Button onClick={create} icon="plus">Create task</Button></div>
+  </div></div>;
+}
+
+function CommitList({ commits, showEmployee = false }) {
+  return <div className="commit-list">{commits.map((commit) => <div className="commit-row" key={commit.id}><span className="commit-sha">{commit.shortSha}</span><div className="commit-info"><strong>{(commit.message || "No commit message").split("\n")[0]}</strong><small>{commit.author ? `@${commit.author}` : commit.employeeName || "Unknown author"}{commit.committedAt ? ` · ${new Date(commit.committedAt).toLocaleString()}` : ""}</small></div>{showEmployee && commit.employeeName && <small className="commit-employee">{commit.employeeName}</small>}<a className="commit-link" href={commit.commitUrl} target="_blank" rel="noreferrer" title="Open commit on GitHub">↗</a><Badge tone="green">✓ Verified</Badge></div>)}</div>;
+}
+
+function GitHubCommitPanel({ task, role, reloadSignal = 0 }) {
+  const [commits, setCommits] = useState(null);
+  const [error, setError] = useState("");
+  const [account, setAccount] = useState(null);
+  const loadCommits = () => api.commits.list(task.id).then(setCommits).catch(() => setCommits([]));
+  useEffect(() => {
+    loadCommits();
+    if (role === "employee") api.github.status().then(setAccount).catch(() => setAccount({ connected: false }));
+  }, [task.id, reloadSignal]);
+  const connect = async () => {
+    setError("");
+    try {
+      const { url } = await api.github.start();
+      window.location.assign(url);
+    } catch (requestError) {
+      setError(requestError.message);
+    }
+  };
+  const repoHint = task.githubRepo || task.projectRepo;
+  return <div className="task-detail-section"><h3>GitHub commits {commits && <Badge tone={commits.length ? "green" : "neutral"}>{commits.length} verified</Badge>}</h3>{commits && commits.length > 0 && <CommitList commits={commits} />}{commits && !commits.length && <p className="detail-empty">{repoHint ? `Push your work to ${repoHint.replace(/^https?:\/\//, "")} and add the commit link from the submission dropdown above.` : "No verified commits yet. Add a commit link from the submission dropdown above."}</p>}{role === "employee" && task.status !== "approved" && account && !account.connected && <div className="commit-connect"><p className="detail-empty">Connect GitHub so Zippio can verify your commits and unlock submission.</p><Button variant="secondary" onClick={connect}>Connect GitHub</Button></div>}{error && <p className="auth-error" role="alert">{error}</p>}{role !== "employee" && <small className="muted">Verified commits add +3 KPI bonus points each on approval (max +15).</small>}</div>;
+}
+
+function ProjectsPage({ projects = [], employees = [], onCreate, onSendInvites, onMemberChange }) {
+  const [query, setQuery] = useState("");
+  const [busyProject, setBusyProject] = useState(null);
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const visible = projects.filter((project) => `${project.name} ${project.repo_url || ""} ${project.id}`.toLowerCase().includes(query.toLowerCase()));
+  const inviteSummary = (project) => {
+    const members = project.members || [];
+    if (!project.repo_url) return null;
+    const connected = members.filter((member) => member.githubConnected).length;
+    const missing = members.length - connected;
+    if (!members.length) return null;
+    return connected && !missing ? <Badge tone="green">⌘ {connected} repo access ready</Badge> : <><Badge tone="green">⌘ {connected} ready</Badge>{missing > 0 && <Badge tone="orange">{missing} need GitHub</Badge>}</>;
+  };
+  return <><Header title="Projects" subtitle="Group team work by project and repository." onMenu={() => {}} onCreate={onCreate} createLabel="New project" notifications={0} /><div className="toolbar"><div className="search"><span>⌕</span><input placeholder="Search projects..." value={query} onChange={(event) => setQuery(event.target.value)} /></div></div><div className="projects-grid">{visible.map((project) => <section className="panel project-card project-card-interactive" key={project.id} onClick={() => setSelectedProjectId(project.id)}><div className="panel-header"><div><h2>{project.name}</h2><p>{project.id} · {project.taskCount} task{project.taskCount === 1 ? "" : "s"}</p></div><Badge tone={project.status === "active" ? "green" : project.status === "completed" ? "blue" : "neutral"}>{project.status}</Badge></div>{project.repo_url && <a className="project-repo" href={project.repo_url} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>⌘ {project.repo_url.replace(/^https?:\/\//, "")}</a>}{project.description && <p>{project.description}</p>}<div className="project-members">{(project.members || []).map((member) => <span className={`avatar member-avatar ${member.githubConnected ? "" : "member-avatar-muted"}`} key={`${project.id}-${member.employeeId}`} title={`${member.name} · ${member.role} · ${member.githubConnected ? "GitHub connected" : "GitHub not connected"}`}>{employees.find((person) => person.id === member.employeeId)?.initials || (member.name || "?").slice(0, 2).toUpperCase()}</span>)}{(project.members || []).length === 0 && <small className="muted">No members yet</small>}</div>{inviteSummary(project) && <div className="project-invite-row">{inviteSummary(project)}{onSendInvites && <button type="button" className="link-button" disabled={busyProject === project.id} onClick={async (event) => { event.stopPropagation(); setBusyProject(project.id); await onSendInvites(project.id); setBusyProject(null); }}>{busyProject === project.id ? "Sending…" : "Send repo invites"}</button>}</div>}<button type="button" className="project-open-link" onClick={(event) => { event.stopPropagation(); setSelectedProjectId(project.id); }}>View project details <Icon name="arrow" /></button></section>)}{!visible.length && <div className="detail-empty">No projects yet — create the first one to group your team's work.</div>}</div>{selectedProjectId && projects.some((project) => project.id === selectedProjectId) && <ProjectDetailsModal project={projects.find((project) => project.id === selectedProjectId)} employees={employees} onClose={() => setSelectedProjectId(null)} onMemberChange={onMemberChange} />}</>;
+}
+
+function ProjectModal({ employees, onClose, onCreate }) {
+  const [memberOptions, setMemberOptions] = useState(employees);
+  const [form, setForm] = useState({ name: "", description: "", repoUrl: "", memberIds: [] });
+  const [repoMode, setRepoMode] = useState("existing");
+  const [repoDraft, setRepoDraft] = useState({ name: "", description: "", private: true, autoInit: true, gitignoreTemplate: "None", licenseTemplate: "None" });
+  const [githubState, setGithubState] = useState(null);
+  const [repoCreated, setRepoCreated] = useState(null);
+  const [creatingRepo, setCreatingRepo] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    let active = true;
+    api.employees.list().then((freshEmployees) => { if (active) setMemberOptions(freshEmployees); }).catch(() => { if (active) setMemberOptions(employees); });
+    api.github.status().then((status) => { if (active) setGithubState(status); }).catch(() => { if (active) setGithubState({ connected: false }); });
+    return () => { active = false; };
+  }, [employees]);
+  const slugify = (value) => String(value || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 90);
+  const updateProjectName = (event) => {
+    const name = event.target.value;
+    setForm((current) => ({ ...current, name }));
+    setRepoDraft((current) => (current.name && current.name !== slugify(current.name) ? current : { ...current, name: slugify(name) }));
+  };
+  const switchRepoMode = (mode) => {
+    setRepoMode(mode);
+    setError("");
+    setRepoCreated(null);
+  };
+  const createRepository = async () => {
+    if (!repoDraft.name.trim()) return;
+    setCreatingRepo(true);
+    setError("");
+    try {
+      const result = await api.projects.createRepo({
+        name: repoDraft.name.trim(),
+        description: repoDraft.description.trim() || undefined,
+        private: repoDraft.private,
+        autoInit: repoDraft.autoInit,
+        gitignoreTemplate: repoDraft.gitignoreTemplate !== "None" ? repoDraft.gitignoreTemplate : undefined,
+        licenseTemplate: repoDraft.licenseTemplate !== "None" ? repoDraft.licenseTemplate : undefined,
+      });
+      setRepoCreated(result);
+      setForm((current) => ({ ...current, repoUrl: result.repoUrl }));
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setCreatingRepo(false);
+    }
+  };
+  const toggleMember = (employeeId) => setForm((current) => ({ ...current, memberIds: current.memberIds.includes(employeeId) ? current.memberIds.filter((id) => id !== employeeId) : [...current.memberIds, employeeId] }));
+  const submit = async (event) => {
+    event.preventDefault();
+    setError("");
+    let repoUrl = form.repoUrl.trim() || undefined;
+    if (repoMode === "create" && !repoCreated) {
+      if (!repoDraft.name.trim()) { setError("Repository name is required — Zippio will create the GitHub repository with it."); setSaving(false); return; }
+      setCreatingRepo(true);
+      try {
+        const result = await api.projects.createRepo({
+          name: repoDraft.name.trim(),
+          description: repoDraft.description.trim() || form.description.trim() || undefined,
+          private: repoDraft.private,
+          autoInit: repoDraft.autoInit,
+          gitignoreTemplate: repoDraft.gitignoreTemplate !== "None" ? repoDraft.gitignoreTemplate : undefined,
+          licenseTemplate: repoDraft.licenseTemplate !== "None" ? repoDraft.licenseTemplate : undefined,
+        });
+        setRepoCreated(result);
+        setForm((current) => ({ ...current, repoUrl: result.repoUrl }));
+        repoUrl = result.repoUrl;
+      } catch (repoError) {
+        setCreatingRepo(false);
+        setError(repoError.message || "Could not create the GitHub repository.");
+        return;
+      }
+      setCreatingRepo(false);
+    }
+    setSaving(true);
+    try {
+      await onCreate({ name: form.name.trim(), description: form.description.trim() || undefined, repoUrl, memberIds: form.memberIds });
+      onClose();
+    } catch (requestError) {
+      setError(requestError.message || "Could not create the project.");
+    } finally {
+      setSaving(false);
+    }
+  };
+  return <div className="modal-backdrop" onMouseDown={onClose}><form className="modal project-create-modal" onSubmit={submit} onMouseDown={(event) => event.stopPropagation()}><div className="modal-header"><div><h2>Create project</h2><p>Group task work and choose the teammates involved.</p></div><button type="button" className="close-button" onClick={onClose}>×</button></div><div className="form-grid"><label className="field full">Project name<input autoFocus required minLength="2" value={form.name} onChange={updateProjectName} placeholder="e.g. Mobile app rewrite" /></label>
+<div className="field full repo-mode-field">
+  <div className="repo-mode-switch">
+    <button type="button" className={repoMode === "existing" ? "active" : ""} onClick={() => switchRepoMode("existing")}><Icon name="branch" /> Existing GitHub repository</button>
+    <button type="button" className={repoMode === "create" ? "active" : ""} onClick={() => switchRepoMode("create")}><Icon name="plus" /> Create new repository</button>
+  </div>
+  {repoMode === "existing" && <label className="field full">GitHub repository URL<input type="url" value={form.repoUrl} onChange={(event) => setForm({ ...form, repoUrl: event.target.value })} placeholder="https://github.com/owner/repository" /></label>}
+  {repoMode === "create" && <div className="repo-create-box">
+    {githubState && !githubState.connected && <div className="repo-connect-warning"><div><strong>Connect your GitHub account first</strong><small>Zippio creates the repository on your connected GitHub account. Profile ••• → GitHub to connect.</small></div></div>}
+    {githubState && githubState.connected && <small className="repo-owner-note">Repository will be created on your account: <strong>@{githubState.login}</strong></small>}
+    {githubState && githubState.connected && <div className="form-grid repo-create-grid">
+      <label className="field full">Repository name<input required value={repoDraft.name} onChange={(event) => setRepoDraft({ ...repoDraft, name: event.target.value })} placeholder="e.g. mobile-app-rewrite" /></label>
+      <label className="field full">Repository description<input value={repoDraft.description} onChange={(event) => setRepoDraft({ ...repoDraft, description: event.target.value })} placeholder="Optional — defaults to your project description" /></label>
+      <div className="field"><span>Visibility</span><div className="visibility-picker"><button type="button" className={repoDraft.private ? "active" : ""} onClick={() => setRepoDraft({ ...repoDraft, private: true })}><Icon name="lock" /> Private</button><button type="button" className={!repoDraft.private ? "active" : ""} onClick={() => setRepoDraft({ ...repoDraft, private: false })}>Public</button></div></div>
+      <div className="field"><span>Initialize</span><label className="auto-init-toggle"><input type="checkbox" checked={repoDraft.autoInit} onChange={(event) => setRepoDraft({ ...repoDraft, autoInit: event.target.checked })} /> Add README (recommended)</label></div>
+      <label className="field">.gitignore template<select value={repoDraft.gitignoreTemplate} onChange={(event) => setRepoDraft({ ...repoDraft, gitignoreTemplate: event.target.value })}><option>None</option><option>Node</option><option>Python</option><option>Java</option><option>Go</option><option>Dart</option><option>ReactNative</option><option>VisualStudio</option></select></label>
+      <label className="field">License<select value={repoDraft.licenseTemplate} onChange={(event) => setRepoDraft({ ...repoDraft, licenseTemplate: event.target.value })}><option>None</option><option>mit</option><option>apache-2.0</option><option>gpl-3.0</option><option>bsd-3-clause</option><option>mpl-2.0</option></select></label>
+      {repoCreated && <div className="repo-created-banner"><Icon name="check" /><div><strong>Repository created on GitHub</strong><small>{repoCreated.fullName}</small></div><a href={repoCreated.repoUrl} target="_blank" rel="noreferrer">Open <Icon name="arrow" /></a></div>}
+      <div className="repo-create-action">{repoCreated ? <small>Linked automatically — just create the project.</small> : <Button type="button" variant="secondary" disabled={creatingRepo || !repoDraft.name.trim()} onClick={createRepository}>{creatingRepo ? "Creating repository…" : "Create repository on GitHub"}</Button>}</div>
+    </div>}
+  </div>}
+</div>
+<label className="field full">Description<textarea value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} placeholder="What is this project about?" /></label><div className="field full"><div className="member-picker-heading"><span>Team members</span><Badge tone="blue">{form.memberIds.length} selected</Badge></div><div className="project-member-picker project-member-picker-single-column">{memberOptions.filter((person) => String(person.status || "").toLowerCase() !== "inactive").map((person) => <label className={`member-option ${form.memberIds.includes(person.id) ? "member-option-selected" : ""}`} key={person.id}><input type="checkbox" checked={form.memberIds.includes(person.id)} onChange={() => toggleMember(person.id)} /><span className="avatar">{person.initials}</span><div className="member-option-info"><strong>{person.name}</strong><small>{[person.title, person.department].filter(Boolean).join(" · ") || "Employee"}</small><small>{person.email}</small></div><span className={`member-git-chip ${person.githubConnected ? "green" : "muted"}`} title={person.githubConnected ? `${person.name} has GitHub connected — a repository invite will be sent automatically` : `${person.name} has not connected GitHub yet — no repository invite can be sent`}>{person.githubConnected ? "⌘ Git connected" : "Git not connected"}</span></label>)}{!memberOptions.length && <div className="detail-empty">No employees available.</div>}</div><small>You will be added as project lead. Teammates who connected GitHub can receive a repository collaborator invite.</small></div></div>{error && <p className="auth-error" role="alert">{error}</p>}<div className="modal-footer"><Button type="button" variant="secondary" onClick={onClose}>Cancel</Button><Button type="submit" disabled={saving || creatingRepo} icon="plus">{creatingRepo ? "Creating repository…" : saving ? "Creating project…" : repoMode === "create" && !repoCreated ? "Create project + GitHub repository" : "Create project"}</Button></div></form></div>;
+}
+
+function ProjectDetailsModal({ project, employees, onClose, onMemberChange }) {
+  const [employeeId, setEmployeeId] = useState("");
+  const [query, setQuery] = useState("");
+  const [busyId, setBusyId] = useState("");
+  const [error, setError] = useState("");
+  const members = project.members || [];
+  const memberIds = new Set(members.map((member) => member.employeeId));
+  const candidates = employees.filter((person) => !memberIds.has(person.id) && String(person.status || "").toLowerCase() !== "inactive" && `${person.name} ${person.email} ${person.department || ""}`.toLowerCase().includes(query.toLowerCase()));
+  const addMember = async () => {
+    if (!employeeId) return;
+    setBusyId(employeeId); setError("");
+    try { await onMemberChange(project.id, employeeId, "add"); setEmployeeId(""); }
+    catch (requestError) { setError(requestError.message); }
+    finally { setBusyId(""); }
+  };
+  const removeMember = async (member) => {
+    setBusyId(member.employeeId); setError("");
+    try { await onMemberChange(project.id, member.employeeId, "remove"); }
+    catch (requestError) { setError(requestError.message); }
+    finally { setBusyId(""); }
+  };
+  return <div className="modal-backdrop" onMouseDown={onClose}><section className="task-details-modal project-details-modal" onMouseDown={(event) => event.stopPropagation()}><div className="modal-header"><div><div className="task-detail-id">{project.id} · {project.status}</div><h2>{project.name}</h2><p>{project.taskCount || 0} linked tasks · Created {new Date(project.created_at).toLocaleDateString()}</p></div><button className="close-button" onClick={onClose}>×</button></div>{project.repo_url && <a className="project-repo" href={project.repo_url} target="_blank" rel="noreferrer">⌘ {project.repo_url.replace(/^https?:\/\//, "")}</a>}<div className="task-detail-section"><h3>Project description</h3><p>{project.description || "No description has been added."}</p></div><div className="task-detail-section"><div className="panel-header project-members-heading"><div><h3>Team members</h3><p>{members.length} member{members.length === 1 ? "" : "s"}, including project lead</p></div></div><div className="project-member-table">{members.map((member) => { const person = employees.find((employee) => employee.id === member.employeeId); const isLead = member.role === "lead"; return <div className="project-member-detail-row" key={member.employeeId}><span className="avatar">{person?.initials || (member.name || "?").slice(0, 2).toUpperCase()}</span><div className="member-option-info"><strong>{member.name}</strong><small>{[member.title || person?.title, person?.department, person?.email].filter(Boolean).join(" · ")}</small></div><span className={`member-git-chip ${member.githubConnected ? "green" : "muted"}`}>{member.githubConnected ? "⌘ Git connected" : "Git not connected"}</span><Badge tone={isLead ? "blue" : "neutral"}>{isLead ? "Lead" : "Member"}</Badge>{!isLead && <button type="button" className="small-button small-button-reject" disabled={Boolean(busyId)} onClick={() => removeMember(member)}>{busyId === member.employeeId ? "Removing…" : "Remove"}</button>}</div>; })}{!members.length && <div className="detail-empty">No project members.</div>}</div></div><div className="task-detail-section"><h3>Add a team member</h3><div className="project-member-add-row"><input aria-label="Search team members" placeholder="Search by name, email, or department" value={query} onChange={(event) => setQuery(event.target.value)} /><select aria-label="Choose a team member" value={employeeId} onChange={(event) => setEmployeeId(event.target.value)}><option value="">Select employee</option>{candidates.map((person) => <option key={person.id} value={person.id}>{person.name} · {person.department || person.title || "Employee"}</option>)}</select><Button disabled={!employeeId || Boolean(busyId)} onClick={addMember}>{busyId === employeeId ? "Adding…" : "Add member"}</Button></div>{!candidates.length && <small className="muted">All active employees are already on this project or do not match the search.</small>}{error && <p className="auth-error" role="alert">{error}</p>}</div><div className="task-detail-actions"><Button variant="secondary" onClick={onClose}>Close</Button></div></section></div>;
 }
 
 function App() {
@@ -431,11 +1196,32 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loadError, setLoadError] = useState("");
   const [actionError, setActionError] = useState("");
+  const [projects, setProjects] = useState([]);
+  const [projectModal, setProjectModal] = useState(false);
+  const [notice, setNotice] = useState("");
+  const [accountModal, setAccountModal] = useState(null);
   useEffect(() => {
     const handleHistory = () => setPage(window.location.hash.slice(1) || "dashboard");
     window.addEventListener("popstate", handleHistory);
     return () => window.removeEventListener("popstate", handleHistory);
   }, []);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const githubFlag = params.get("github");
+    if (!githubFlag) return;
+    params.delete("github");
+    params.delete("reason");
+    const query = params.toString();
+    window.history.replaceState({}, "", `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`);
+    if (githubFlag === "connected") setNotice("GitHub account connected — you can now verify commits on your tasks.");
+    else setActionError("GitHub connection failed. Please try connecting again.");
+  }, []);
+  useEffect(() => {
+    if (!session) return;
+    api.github.status().then((status) => {
+      if (status?.connected) setNotice((current) => current || `GitHub connected as @${status.login}.`);
+    }).catch(() => {});
+  }, [session]);
   const navigatePage = (nextPage) => {
     setPage(nextPage);
     if (window.location.hash !== `#${nextPage}`) window.history.pushState({ page: nextPage }, "", `#${nextPage}`);
@@ -444,8 +1230,8 @@ function App() {
     if (!session) return;
     setIsLoading(true);
     const summaryRequest = session.role === "hr" ? api.reports.summary() : Promise.resolve(null);
-    Promise.all([api.employees.list(), api.tasks.list(), api.hrRequests.list(), api.attendance.list(), api.delegations.list(), api.leave.list(), api.leave.types(), api.support.list(), summaryRequest])
-      .then(([people, work, hrWork, attendanceData, delegations, leaveData, leaveTypeData, supportData, summary]) => {
+    Promise.all([api.employees.list(), api.tasks.list(), api.hrRequests.list(), api.attendance.list(), api.delegations.list(), api.leave.list(), api.leave.types(), api.support.list(), summaryRequest, api.projects.list().catch(() => [])])
+      .then(([people, work, hrWork, attendanceData, delegations, leaveData, leaveTypeData, supportData, summary, projectData]) => {
         setAttendanceRows(attendanceData);
         const formatAttendance = (row) => ({
           date: attendanceDate(row.work_date),
@@ -468,7 +1254,7 @@ function App() {
           attendance: attendanceData.filter((row) => row.employee_code === person.id).map(formatAttendance),
         })));
         setTasks(work); setRequests(hrWork); setDelegationRequests(delegations); setLeaveRequests(leaveData); setLeaveTypes(leaveTypeData); setSupportTickets(supportData);
-        setReportSummary(summary);
+        setProjects(projectData); setReportSummary(summary);
       })
       .catch((error) => setLoadError(error.message))
       .finally(() => setIsLoading(false));
@@ -488,6 +1274,32 @@ function App() {
   useEffect(() => { const toggle = () => setSidebarOpen((open) => !open); window.addEventListener("zippio:toggle-menu", toggle); return () => window.removeEventListener("zippio:toggle-menu", toggle); }, []);
   const employee = session?.role === "employee" ? employees.find((e) => e.id === session.userId || e.user_id === session.userId) : null;
   const activeEmployee = employee || employees[0];
+  const refreshEmployees = async () => {
+    try {
+      const people = await api.employees.list();
+      setEmployees(people.map((person) => ({
+        ...person,
+        attendance: attendanceRows.filter((row) => row.employee_code === person.id).map((row) => ({
+          date: attendanceDate(row.work_date),
+          in: row.check_in ? formatTime(row.check_in) : "—",
+          out: row.check_out ? formatTime(row.check_out) : null,
+          duration: row.check_in && row.check_out ? formatDuration(row.check_in, row.check_out) : "Active",
+          status: row.status,
+        })),
+      })));
+    } catch (error) { setActionError(error.message); }
+  };
+  const applyProfileUpdate = async (result) => {
+    const nextSession = {
+      ...session,
+      name: result?.displayName || result?.name || session.name,
+      jobTitle: result?.title || session.jobTitle,
+    };
+    sessionStorage.setItem("zippio_session", JSON.stringify(nextSession));
+    setSession(nextSession);
+    await refreshEmployees();
+    setNotice("Profile updated successfully.");
+  };
   const login = async ({ role, userId, email, password }) => {
     try {
       setLoadError("");
@@ -547,13 +1359,17 @@ function App() {
       if (approved) setTasks(await api.tasks.list());
     } catch (error) { setActionError(error.message); }
   };
-  const uploadToTask = async (id, file, githubRepo) => {
+  const uploadToTask = async (id, attachmentName, githubRepo) => {
     try {
-      if (file) await api.attachments.upload(id, file);
-      await updateTask(id, { attachmentName: file?.name || "", githubRepo: githubRepo || "", status: "review", note: "Submitted for manager review." });
+      await updateTask(id, { status: "review", note: "Submitted for manager review.", attachmentName: attachmentName || undefined, githubRepo: githubRepo || undefined });
     } catch (error) {
       setActionError(error.message);
     }
+  };
+  const refreshTask = (updatedTask) => {
+    if (!updatedTask?.id) return;
+    setTasks((current) => current.map((item) => item.id === updatedTask.id ? { ...item, ...updatedTask } : item));
+    setSelectedTask((current) => current?.id === updatedTask.id ? { ...current, ...updatedTask } : current);
   };
   const checkIn = async () => {
     let record;
@@ -580,12 +1396,17 @@ function App() {
   };
   const createTask = async (data) => {
     try {
-      const { attachment, ...taskPayload } = data;
-      const createdTask = await api.tasks.create(taskPayload);
+      const { attachment, files = [], repos = [], links = [], projectId, ...taskPayload } = data;
+      const referenceLinks = [...repos.map((url) => ({ kind: "repo", url })), ...links.map((url) => ({ kind: "link", url }))];
+      const payload = { ...taskPayload };
+      if (projectId) payload.projectId = projectId;
+      if (referenceLinks.length) payload.links = referenceLinks;
+      const createdTask = await api.tasks.create(payload);
       let task = createdTask;
-      if (attachment) {
-        const uploaded = await api.attachments.upload(createdTask.id, attachment);
-        task = { ...createdTask, attachmentName: uploaded.file_name || attachment.name };
+      const uploads = files.length ? files : attachment ? [attachment] : [];
+      for (const file of uploads) {
+        const uploaded = await api.attachments.upload(createdTask.id, file);
+        task = { ...task, attachmentName: uploaded.file_name || file.name };
       }
       setTasks((current) => [...current, task]);
       setModal(false);
@@ -603,8 +1424,74 @@ function App() {
       setActionError(error.message);
     }
   };
-  const createEmployee = async (data) => {
+  const createProject = async (data) => {
     try {
+      const created = await api.projects.create(data);
+      setProjects(await api.projects.list());
+      setProjectModal(false);
+      const invites = created?.githubInvites?.invites || [];
+      if (created?.githubInvites && !created.githubInvites.repo) setNotice("Project created. No repository linked — add a repo URL to send automatic collaborator invites.");
+      else if (created?.githubInvites?.error === "creator-not-connected") setNotice("Project created. Connect your GitHub account (profile ••• → GitHub) to send repository invites to teammates.");
+      else if (created?.githubInvites) {
+        const sent = invites.filter((invite) => invite.status === "invited").length;
+        const already = invites.filter((invite) => invite.status === "already-collaborator").length;
+        const missing = invites.filter((invite) => invite.status === "github-not-connected").length;
+        const failed = invites.filter((invite) => ["no-access", "not-found", "failed"].includes(invite.status)).length;
+        let message = `Project created. ${sent} repository invite${sent === 1 ? "" : "s"} sent`;
+        if (already) message += `, ${already} already have access`;
+        if (missing) message += `, ${missing} teammate${missing === 1 ? "" : "s"} need to connect GitHub first`;
+        if (failed) message += `, ${failed} could not be invited`;
+        setNotice(`${message}.`);
+      }
+    } catch (error) {
+      setActionError(error.message);
+      throw error;
+    }
+  };
+  const sendRepoInvites = async (projectId) => {
+    try {
+      const result = await api.projects.sendRepoInvites(projectId);
+      if (result.error === "creator-not-connected") { setNotice("Connect your GitHub account (profile ••• → GitHub) first — then send repository invites again."); return; }
+      const sent = (result.invites || []).filter((invite) => invite.status === "invited").length;
+      const already = (result.invites || []).filter((invite) => invite.status === "already-collaborator").length;
+      const missing = (result.invites || []).filter((invite) => invite.status === "github-not-connected").length;
+      const failed = (result.invites || []).filter((invite) => ["no-access", "not-found", "failed"].includes(invite.status)).length;
+      let message = `Repository invites: ${sent} sent`;
+      if (already) message += `, ${already} already have access`;
+      if (missing) message += `, ${missing} need to connect GitHub`;
+      if (failed) message += `, ${failed} failed`;
+      setNotice(`${message}.`);
+    } catch (error) {
+      setActionError(error.message);
+    }
+  };
+  const changeProjectMember = async (projectId, employeeId, action) => {
+    try {
+      const result = action === "add"
+        ? await api.projects.addMember(projectId, employeeId)
+        : await api.projects.removeMember(projectId, employeeId);
+      setProjects(await api.projects.list());
+      if (action === "add" && result?.invite) {
+        const invite = result.invite;
+        setNotice(invite.status === "invited" ? `Added ${invite.name} and sent a GitHub collaborator invite.` : invite.status === "github-not-connected" ? `Added ${invite.name}. They need to connect GitHub before receiving a repository invite.` : invite.status === "creator-not-connected" ? `Added ${invite.name}. Connect your GitHub account to send repository invites.` : `Added ${invite.name} to the project.`);
+      }
+      return result;
+    } catch (error) {
+      setActionError(error.message);
+      throw error;
+    }
+  };
+  const deleteProject = async (projectId) => {
+    try {
+      await api.projects.remove(projectId);
+      setProjects(await api.projects.list());
+      setNotice("Project deleted.");
+    } catch (error) {
+      setActionError(error.message);
+      throw error;
+    }
+  };
+  const createEmployee = async (data) => {    try {
       const created = await api.employees.create(data);
       const people = await api.employees.list();
       setEmployees((current) => people.map((person) => ({ ...person, attendance: current.find((item) => item.id === person.id)?.attendance || [] })));
@@ -658,8 +1545,10 @@ function App() {
   if (isLoading) return <div className="loading-screen">Loading your workspace…</div>;
   const isManager = session.role === "manager";
   const isHr = session.role === "hr";
+  const isTeamLead = !isManager && !isHr && ["team lead", "teamlead"].includes(String(employee?.title || "").toLowerCase());
+  const canCreateProjects = isManager || isTeamLead;
   if (!isManager && !isHr && !employee) return <div className="loading-screen">Loading your workspace…</div>;
-  const title = isHr ? (page === "requests" ? "HR requests" : page === "employees" ? "Employees" : page === "analytics" ? "Performance & analytics" : page === "leave" ? "Attendance & leave" : page === "support" ? "Helpdesk & support" : "HR command center") : page === "dashboard" ? "Overview" : page === "tasks" ? (isManager ? "All tasks" : "My tasks") : page === "performance" ? "My performance" : page === "attendance" ? "Attendance" : page === "leave" ? "Apply leave" : page === "employees" ? "Employees" : page === "reviews" ? "Review queue" : "Performance";
+  const title = isHr ? (page === "requests" ? "HR requests" : page === "employees" ? "Employees" : page === "analytics" ? "Performance & analytics" : page === "leave" ? "Attendance & leave" : page === "support" ? "Helpdesk & support" : "HR command center") : page === "dashboard" ? "Overview" : page === "tasks" ? (isManager ? "All tasks" : "My tasks") : page === "projects" ? "Projects" : page === "performance" ? "My performance" : page === "development" ? "Development" : page === "attendance" ? "Attendance" : page === "leave" ? "Apply leave" : page === "employees" ? "Employees" : page === "reviews" ? "Review queue" : "Performance";
   const delegationRank = { pending: 3, approved: 2, rejected: 1 };
   const delegationStatusByParent = {};
   for (const request of delegationRequests) {
@@ -667,7 +1556,7 @@ function App() {
     if (!current || (delegationRank[request.status] || 0) > (delegationRank[current] || 0)) delegationStatusByParent[request.parentTaskId] = request.status;
   }
   const tasksWithDelegation = tasks.map((task) => ({ ...task, delegationStatus: delegationStatusByParent[task.id] }));
-  return <>{actionError && <div className="action-error-banner" role="alert"><span>{actionError}</span><button type="button" onClick={() => setActionError("")}>×</button></div>}<div className="app-shell"><Sidebar role={session.role} employee={employee} page={page} setPage={navigatePage} onLogout={logout} open={sidebarOpen} setOpen={setSidebarOpen} name={session.name} jobTitle={session.jobTitle} reviewCount={tasks.filter((task) => task.status === "review").length + delegationRequests.filter((request) => request.status === "pending").length} requestCount={requests.filter((request) => !["Completed", "Rejected"].includes(request.status)).length} /><main className="main-content"><div className="desktop-context">{title}</div>{isHr && page === "dashboard" && <HrDashboard requests={requests} employees={employees} attendanceRows={attendanceRows} leaveRequests={leaveRequests} reportSummary={reportSummary} setPage={navigatePage} onOpenRequest={setSelectedRequest} onCreate={() => setModal(true)} />}{isHr && page === "requests" && <HrRequestsPage requests={requests} onOpenRequest={setSelectedRequest} onCreate={() => setModal(true)} />}{isHr && page === "employees" && <EmployeesPage employees={employees} showCreate onCreate={() => setEmployeeModal(true)} />}{isHr && page === "analytics" && <HrAnalyticsPage employees={employees} />}{isHr && page === "leave" && <LeavePage isHr employees={employees} leaveRequests={leaveRequests} leaveTypes={leaveTypes} attendanceRows={attendanceRows} onReview={reviewLeaveRequest} />}{isHr && page === "support" && <SupportPage tickets={supportTickets} onCreate={createSupportTicket} onUpdate={updateSupportTicket} />}{isManager && page === "dashboard" && <ManagerDashboard tasks={tasksWithDelegation} employees={employees} setPage={navigatePage} onCreate={() => setModal(true)} attendance={attendance} attendanceRows={attendanceRows} leaveRequests={leaveRequests} managerName={session.name || "Manager"} onReview={review} delegationRequests={delegationRequests} onDelegation={reviewDelegation} />}{isManager && page === "tasks" && <TasksPage role="manager" tasks={tasksWithDelegation} employees={employees} delegationRequests={delegationRequests} onDelegation={reviewDelegation} onCreate={() => setModal(true)} onOpen={setSelectedTask} onReview={review} />}{isManager && page === "employees" && <EmployeesPage employees={employees} />}{isManager && page === "reviews" && <ReviewPage tasks={tasksWithDelegation} employees={employees} delegationRequests={delegationRequests} onReview={review} onDelegation={reviewDelegation} />}{isManager && page === "reports" && activeEmployee && <PerformancePage employee={activeEmployee} employees={employees} tasks={tasksWithDelegation} title="Performance" />}{!isManager && !isHr && page === "dashboard" && <EmployeeDashboard employee={employee} employees={employees} tasks={tasksWithDelegation} onStart={start} onSubmit={submit} onOpen={setSelectedTask} setPage={navigatePage} attendance={attendance} onCheckIn={checkIn} onCheckOut={checkOut} />}{!isManager && !isHr && page === "tasks" && <TasksPage role="employee" tasks={tasksWithDelegation} employee={employee} employees={employees} onStart={start} onSubmit={submit} onOpen={setSelectedTask} />}{!isManager && !isHr && page === "performance" && <PerformancePage employee={employee} employees={employees} tasks={tasksWithDelegation} />}{!isManager && !isHr && page === "attendance" && <AttendancePage employee={employee} attendance={attendance} onCheckIn={checkIn} onCheckOut={checkOut} />}{!isManager && !isHr && page === "leave" && <LeavePage employee={employee} leaveRequests={leaveRequests} leaveTypes={leaveTypes} onCreate={createLeaveRequest} />}</main>{modal && (isHr ? <HrRequestModal employees={employees} onClose={() => setModal(false)} onCreate={createHrRequest} /> : <TaskModal employees={employees} onClose={() => setModal(false)} onCreate={createTask} />)}{employeeModal && <CreateEmployeeModal employees={employees} onClose={() => setEmployeeModal(false)} onCreate={createEmployee} />}{selectedTask && <TaskDetails task={selectedTask} employeeName={employees.find((person) => person.id === selectedTask.employeeId)?.name} currentEmployeeId={employee?.id} onClose={() => setSelectedTask(null)} onStart={start} onDelegate={setDelegationTask} onUpload={uploadToTask} onReview={review} canReview={isManager || isHr} />}{delegationTask && <DelegationModal task={delegationTask} employees={employees} currentEmployeeId={employee?.id} onClose={() => setDelegationTask(null)} onSubmit={createDelegationRequest} />}{selectedRequest && <RequestDetails request={selectedRequest} onClose={() => setSelectedRequest(null)} onUpdate={updateHrRequest} onAddComment={addHrComment} />}</div></>;
+  return <>{actionError && <div className="action-error-banner" role="alert"><span>{actionError}</span><button type="button" onClick={() => setActionError("")}>×</button></div>}{notice && <div className="action-error-banner action-notice-banner" role="status"><span>{notice}</span><button type="button" onClick={() => setNotice("")}>×</button></div>}<div className="app-shell"><Sidebar role={session.role} employee={employee} page={page} setPage={navigatePage} onLogout={logout} open={sidebarOpen} setOpen={setSidebarOpen} name={session.name} jobTitle={session.jobTitle} reviewCount={tasks.filter((task) => task.status === "review").length + delegationRequests.filter((request) => request.status === "pending").length} requestCount={requests.filter((request) => !["Completed", "Rejected"].includes(request.status)).length} onMenuAction={setAccountModal} /><main className="main-content"><div className="desktop-context">{title}</div>{isHr && page === "dashboard" && <HrDashboard requests={requests} employees={employees} attendanceRows={attendanceRows} leaveRequests={leaveRequests} reportSummary={reportSummary} setPage={navigatePage} onOpenRequest={setSelectedRequest} onCreate={() => setModal(true)} />}{isHr && page === "requests" && <HrRequestsPage requests={requests} onOpenRequest={setSelectedRequest} onCreate={() => setModal(true)} />}{isHr && page === "employees" && <EmployeesPage employees={employees} showCreate onCreate={() => setEmployeeModal(true)} />}{isHr && page === "analytics" && <HrAnalyticsPage employees={employees} />}{isHr && page === "leave" && <LeavePage isHr employees={employees} leaveRequests={leaveRequests} leaveTypes={leaveTypes} attendanceRows={attendanceRows} onReview={reviewLeaveRequest} />}{isHr && page === "support" && <SupportPage tickets={supportTickets} onCreate={createSupportTicket} onUpdate={updateSupportTicket} />}{isManager && page === "dashboard" && <ManagerDashboard tasks={tasksWithDelegation} employees={employees} setPage={navigatePage} onCreate={() => setModal(true)} attendance={attendance} attendanceRows={attendanceRows} leaveRequests={leaveRequests} managerName={session.name || "Manager"} onReview={review} delegationRequests={delegationRequests} onDelegation={reviewDelegation} />}{isManager && page === "tasks" && <TasksPage role="manager" tasks={tasksWithDelegation} employees={employees} delegationRequests={delegationRequests} onDelegation={reviewDelegation} onCreate={() => setModal(true)} onOpen={setSelectedTask} onReview={review} />}{(isManager || isTeamLead) && page === "projects" && <ProjectsPage projects={projects} employees={employees} onCreate={() => setProjectModal(true)} onSendInvites={sendRepoInvites} onMemberChange={changeProjectMember} />}{isManager && page === "development" && <DevelopmentPage projects={projects} isManager canCreate onCreate={() => setProjectModal(true)} setPage={navigatePage} employees={employees} onMemberChange={changeProjectMember} onDeleteProject={deleteProject} />}{isManager && page === "employees" && <EmployeesPage employees={employees} />}{isManager && page === "reviews" && <ReviewPage tasks={tasksWithDelegation} employees={employees} delegationRequests={delegationRequests} onReview={review} onDelegation={reviewDelegation} />}{isManager && page === "reports" && activeEmployee && <PerformancePage employee={activeEmployee} employees={employees} tasks={tasksWithDelegation} title="Performance" />}{!isManager && !isHr && page === "dashboard" && <EmployeeDashboard employee={employee} employees={employees} tasks={tasksWithDelegation} onStart={start} onSubmit={submit} onOpen={setSelectedTask} setPage={navigatePage} attendance={attendance} onCheckIn={checkIn} onCheckOut={checkOut} />}{!isManager && !isHr && page === "tasks" && <TasksPage role="employee" tasks={tasksWithDelegation} employee={employee} employees={employees} onStart={start} onSubmit={submit} onOpen={setSelectedTask} />}{!isManager && !isHr && page === "development" && <DevelopmentPage employee={employee} setPage={navigatePage} canCreate={isTeamLead} onCreate={() => setProjectModal(true)} employees={employees} onMemberChange={changeProjectMember} onDeleteProject={deleteProject} />}{!isManager && !isHr && page === "performance" && <PerformancePage employee={employee} employees={employees} tasks={tasksWithDelegation} />}{!isManager && !isHr && page === "attendance" && <AttendancePage employee={employee} attendance={attendance} onCheckIn={checkIn} onCheckOut={checkOut} />}{!isManager && !isHr && page === "leave" && <LeavePage employee={employee} leaveRequests={leaveRequests} leaveTypes={leaveTypes} onCreate={createLeaveRequest} />}</main>{modal && (isHr ? <HrRequestModal employees={employees} onClose={() => setModal(false)} onCreate={createHrRequest} /> : <TaskModal projects={projects} employees={employees} onClose={() => setModal(false)} onCreate={createTask} />)}{employeeModal && <CreateEmployeeModal employees={employees} onClose={() => setEmployeeModal(false)} onCreate={createEmployee} />}{projectModal && <ProjectModal employees={employees} onClose={() => setProjectModal(false)} onCreate={createProject} />}{selectedTask && <TaskDetails task={selectedTask} employeeName={employees.find((person) => person.id === selectedTask.employeeId)?.name} currentEmployeeId={employee?.id} role={session.role} onClose={() => setSelectedTask(null)} onStart={start} onDelegate={setDelegationTask} onUpload={uploadToTask} onTaskRefresh={refreshTask} onReview={review} canReview={isManager || isHr} />}{delegationTask && <DelegationModal task={delegationTask} employees={employees} currentEmployeeId={employee?.id} onClose={() => setDelegationTask(null)} onSubmit={createDelegationRequest} />}{selectedRequest && <RequestDetails request={selectedRequest} onClose={() => setSelectedRequest(null)} onUpdate={updateHrRequest} onAddComment={addHrComment} />}{accountModal === "profile" && <ProfileModal onClose={() => setAccountModal(null)} onSaved={applyProfileUpdate} />}{accountModal === "settings" && <SettingsModal onClose={() => setAccountModal(null)} />}{accountModal === "github" && <GitHubModal onClose={() => setAccountModal(null)} />}</div></>;
 }
 
 createRoot(document.getElementById("root")).render(<React.StrictMode><App /></React.StrictMode>);
