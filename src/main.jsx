@@ -1061,6 +1061,15 @@ function ProjectModal({ employees, onClose, onCreate }) {
     setError("");
     setRepoCreated(null);
   };
+  const connectGitHub = async () => {
+    setError("");
+    try {
+      const { url } = await api.github.start();
+      window.location.assign(url);
+    } catch (requestError) {
+      setError(requestError.message);
+    }
+  };
   const createRepository = async () => {
     if (!repoDraft.name.trim()) return;
     setCreatingRepo(true);
@@ -1127,7 +1136,7 @@ function ProjectModal({ employees, onClose, onCreate }) {
   </div>
   {repoMode === "existing" && <label className="field full">GitHub repository URL<input type="url" value={form.repoUrl} onChange={(event) => setForm({ ...form, repoUrl: event.target.value })} placeholder="https://github.com/owner/repository" /></label>}
   {repoMode === "create" && <div className="repo-create-box">
-    {githubState && !githubState.connected && <div className="repo-connect-warning"><div><strong>Connect your GitHub account first</strong><small>Zippio creates the repository on your connected GitHub account. Profile ••• → GitHub to connect.</small></div></div>}
+    {githubState && !githubState.connected && <div className="repo-connect-warning"><div><strong>{githubState.expired ? "Your GitHub connection expired" : "Connect your GitHub account first"}</strong><small>{githubState.expired ? `Reconnect @${githubState.previousLogin || "your account"} so Zippio can create repositories again.` : "Zippio creates the repository on your connected GitHub account. Profile → GitHub to connect."}</small></div><Button type="button" variant="secondary" onClick={connectGitHub}>Connect GitHub</Button></div>}
     {githubState && githubState.connected && <small className="repo-owner-note">Repository will be created on your account: <strong>@{githubState.login}</strong></small>}
     {githubState && githubState.connected && <div className="form-grid repo-create-grid">
       <label className="field full">Repository name<input required value={repoDraft.name} onChange={(event) => setRepoDraft({ ...repoDraft, name: event.target.value })} placeholder="e.g. mobile-app-rewrite" /></label>

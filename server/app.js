@@ -996,6 +996,7 @@ app.post("/api/projects/github-repos", requireAuth, requireProjectManager, async
     if (!account.rowCount) return response.status(400).json({ message: "Connect your GitHub account first (profile ••• → GitHub) to create a repository", code: "creator-not-connected" });
     const result = await github.createRepository(account.rows[0].access_token, input);
     if (result.status === "name-taken") return response.status(409).json({ message: "A repository with this name already exists on your GitHub account — pick another name", code: "name-taken" });
+    if (result.status === "token-invalid") return response.status(401).json({ message: "Your GitHub connection has expired — reconnect from Profile → GitHub, then try again", code: "token-invalid" });
     if (result.status !== "created") {
       await audit(request, "project.repo_create_failed", "project", null, { name: input.name, reason: result.status });
       return response.status(502).json({ message: result.status === "forbidden" ? "GitHub denied repository creation — check your account permissions" : "GitHub repository could not be created right now — try again", code: result.status });
@@ -1248,8 +1249,20 @@ app.post("/api/auth/password", requireAuth, async (request, response, next) => {
 
 app.get("/api/auth/github", requireAuth, async (request, response, next) => {
   try {
-    const account = await pool.query("SELECT github_login, connected_at FROM github_accounts WHERE user_id = $1", [request.auth.sub]);
-    response.json(account.rowCount ? { connected: true, login: account.rows[0].github_login, connectedAt: account.rows[0].connected_at } : { connected: false, login: null });
+    const account = await pool.query("SELECT github_login, access_token, connected_at FROM github_accounts WHERE user_id = $1", [request.auth.sub]);
+    if (!account.rowCount) return response.json({ connected: false, login: null });
+    let profile;
+    try {
+      profile = await github.getAuthenticatedUser(account.rows[0].access_token);
+    } catch {
+      return response.json({ connected: true, login: account.rows[0].github_login, connectedAt: account.rows[0].connected_at });
+    }
+    if (profile.status === 401) {
+      await pool.query("DELETE FROM github_accounts WHERE user_id = $1", [request.auth.sub]);
+      await audit(request, "github.session_expired", "user", request.auth.sub, { login: account.rows[0].github_login });
+      return response.json({ connected: false, login: null, expired: true, previousLogin: account.rows[0].github_login });
+    }
+    response.json({ connected: true, login: account.rows[0].github_login, connectedAt: account.rows[0].connected_at });
   } catch (error) { next(error); }
 });
 
