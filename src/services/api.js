@@ -31,11 +31,41 @@ async function request(path, options) {
 }
 
 export const api = {
+  projects: {
+    list: () => request("/projects"),
+    create: (payload) => request("/projects", { method: "POST", body: JSON.stringify(payload) }),
+    overview: (id) => request(`/projects/${id}/overview`),
+    remove: (id) => request(`/projects/${id}`, { method: "DELETE" }),
+    createRepo: (payload) => request("/projects/github-repos", { method: "POST", body: JSON.stringify(payload) }),
+    update: (id, payload) => request(`/projects/${id}`, { method: "PATCH", body: JSON.stringify(payload) }),
+    addMember: (id, employeeId) => request(`/projects/${id}/members`, { method: "POST", body: JSON.stringify({ employeeId }) }),
+    removeMember: (id, employeeId) => request(`/projects/${id}/members/${employeeId}`, { method: "DELETE" }),
+    sendRepoInvites: (id) => request(`/projects/${id}/repo-invites`, { method: "POST" }),
+  },
+  commits: {
+    list: (taskId) => request(`/tasks/${taskId}/commits`),
+    verify: (taskId, commitUrl) => request(`/tasks/${taskId}/commits`, { method: "POST", body: JSON.stringify({ commitUrl }) }),
+  },
+  github: {
+    status: () => request("/auth/github"),
+    start: () => request("/auth/github/start"),
+    disconnect: () => request("/auth/github", { method: "DELETE" }),
+  },
+  account: {
+    profile: () => request("/auth/profile"),
+    updateProfile: (payload) => request("/auth/profile", { method: "PATCH", body: JSON.stringify(payload) }),
+    changePassword: (currentPassword, newPassword) => request("/auth/password", { method: "POST", body: JSON.stringify({ currentPassword, newPassword }) }),
+  },
+  development: {
+    summary: () => request("/development/summary"),
+    project: (projectId) => request(`/development/projects/${projectId}/activity`),
+  },
   employees: { list: () => request("/employees"), get: (id) => request(`/employees/${id}`), create: (payload) => request("/employees", { method: "POST", body: JSON.stringify(payload) }) },
   tasks: {
     list: () => request("/tasks"),
     create: (payload) => request("/tasks", { method: "POST", body: JSON.stringify(payload) }),
     update: (id, payload) => request(`/tasks/${id}`, { method: "PATCH", body: JSON.stringify(payload) }),
+    addLink: (id, payload) => request(`/tasks/${id}/links`, { method: "POST", body: JSON.stringify(payload) }),
   },
   hrRequests: {
     list: () => request("/hr-requests"),
@@ -88,6 +118,18 @@ export const api = {
       const body = new FormData();
       body.append("file", file);
       return request(`/tasks/${taskId}/attachment`, { method: "POST", body });
+    },
+    list: (taskId) => request(`/tasks/${taskId}/attachments`),
+    download: async (taskId, attachmentId) => {
+      const response = await fetch(`${API_URL}/tasks/${taskId}/attachments/${attachmentId}`, {
+        cache: "no-store",
+        headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+      });
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null);
+        throw new Error(payload?.message || `Download failed with status ${response.status}`);
+      }
+      return response.blob();
     },
   },
   auth: {

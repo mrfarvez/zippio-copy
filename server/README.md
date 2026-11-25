@@ -35,6 +35,15 @@ The API listens on `http://localhost:4000` by default. The frontend reads the AP
 - `PATCH /api/hr-requests/:id`
 - `GET /api/hr-requests/:id/comments`
 - `POST /api/hr-requests/:id/comments`
+- `GET /api/support/tickets`
+- `POST /api/support/tickets`
+- `PATCH /api/support/tickets/:id`
+- `GET /api/projects`
+- `POST /api/projects`
+- `PATCH /api/projects/:id`
+- `POST /api/projects/:id/members`
+- `DELETE /api/projects/:id/members/:employeeId`
+- `POST /api/projects/:id/repo-invites`
 - `GET /api/tasks/:id/reviews`
 - `POST /api/tasks/:id/reviews`
 - `GET /api/delegations`
